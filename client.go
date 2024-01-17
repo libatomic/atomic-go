@@ -17,63 +17,14 @@
 
 package atomic
 
-import "golang.org/x/oauth2"
-
 type (
-	ClientConfig struct {
-		OauthConfig oauth2.Config
-		APIHost     string
-	}
-
 	Client struct {
-		c ClientConfig
+		Backend Backend
 	}
-
-	Option func(*ClientConfig)
 )
 
-const (
-	DefaultAPIHost = "https://api.passport.online"
-)
-
-func NewClient(opts ...Option) *Client {
-	c := &Client{
-		ClientConfig{
-			OauthConfig: oauth2.Config{
-				Endpoint: DefaultOauthEndpoint,
-			},
-			APIHost: DefaultAPIHost,
-		},
-	}
-
-	for _, opt := range opts {
-		opt(&c.c)
-	}
-	return c
-}
-
-func WithAPIHost(host string) Option {
-	return func(c *ClientConfig) {
-		c.APIHost = host
-	}
-}
-
-func WithOauthEndPoint(ep oauth2.Endpoint) Option {
-	return func(c *ClientConfig) {
-		c.OauthConfig.Endpoint = ep
-	}
-}
-
-func WithOauthHost(host string) Option {
-	return func(c *ClientConfig) {
-		c.OauthConfig.Endpoint.AuthURL = host + "/oauth/authorize"
-		c.OauthConfig.Endpoint.TokenURL = host + "/oauth/token"
-	}
-}
-
-func WithOauthClientCredentials(id, secret string) Option {
-	return func(c *ClientConfig) {
-		c.OauthConfig.ClientID = id
-		c.OauthConfig.ClientSecret = secret
+func NewClient(backend Backend) *Client {
+	return &Client{
+		Backend: backend,
 	}
 }

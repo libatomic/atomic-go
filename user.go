@@ -17,6 +17,10 @@
 
 package atomic
 
+import (
+	"context"
+)
+
 type (
 	UserListParams struct {
 		ListParams
@@ -26,3 +30,16 @@ type (
 		Resource
 	}
 )
+
+func (p UserListParams) Validate() error {
+	return nil
+}
+
+func (c *Client) UserList(ctx context.Context, params UserListParams) *Iter[UserListParams, User] {
+	return NewIter[UserListParams, User](params, func(params UserListParams) (User, bool) {
+
+		c.Backend.ExecContext(ctx, "GET", "/users", params, &User{})
+
+		return User{}, false
+	})
+}

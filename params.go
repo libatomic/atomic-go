@@ -28,7 +28,7 @@ type (
 		Headers  http.Header     `schema:"-"`
 		Expand   []string        `schema:"expand,omitempty"`
 		Fields   []string        `schema:"fields,omitempty"`
-		Instance string          `schema:"instance,omitempty"`
+		Instance *string         `schema:"instance,omitempty"`
 	}
 
 	ListParams struct {

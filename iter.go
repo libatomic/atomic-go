@@ -17,12 +17,21 @@
 
 package atomic
 
-import "golang.org/x/oauth2"
-
-var (
-	DefaultOauthEndpoint = oauth2.Endpoint{
-		TokenURL:  "https://auth.passport.online/oauth/token",
-		AuthURL:   "https://auth.passport.online/oauth/authorize",
-		AuthStyle: oauth2.AuthStyleInHeader,
+type (
+	Iter[P any, T any] struct {
+		cur    T
+		list   []T
+		params P
+		next   NextFunc[P, T]
 	}
+
+	NextFunc[P any, T any] func(P) (T, bool)
 )
+
+func NewIter[P any, T any](params P, n NextFunc[P, T]) *Iter[P, T] {
+	return &Iter[P, T]{
+		list:   make([]T, 0),
+		params: params,
+		next:   n,
+	}
+}
