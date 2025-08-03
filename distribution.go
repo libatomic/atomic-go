@@ -26,27 +26,27 @@ import (
 )
 
 const (
-	UserGetPath    = "/api/1.0.0/users/%s"
-	UserCreatePath = "/api/1.0.0/users"
-	UserUpdatePath = "/api/1.0.0/users/%s"
-	UserDeletePath = "/api/1.0.0/users/%s"
-	UserListPath   = "/api/1.0.0/users"
+	DistributionGetPath    = "/api/1.0.0/distributions/%s"
+	DistributionCreatePath = "/api/1.0.0/distributions"
+	DistributionUpdatePath = "/api/1.0.0/distributions/%s"
+	DistributionDeletePath = "/api/1.0.0/distributions/%s"
+	DistributionListPath   = "/api/1.0.0/distributions"
 )
 
-func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) DistributionGet(ctx context.Context, params *atomic.DistributionGetInput) (*atomic.Distribution, error) {
+	var resp ResponseProxy[atomic.Distribution]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserGetPath, params.UserID.String())
+	path := fmt.Sprintf(DistributionGetPath, params.DistributionID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
 		path,
-		&ParamsProxy[atomic.UserGetInput]{
+		&ParamsProxy[atomic.DistributionGetInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -56,20 +56,18 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) DistributionCreate(ctx context.Context, params *atomic.DistributionCreateInput) (*atomic.Distribution, error) {
+	var resp ResponseProxy[atomic.Distribution]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
-
-	path := fmt.Sprintf(UserCreatePath)
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.UserCreateInput]{
+		DistributionCreatePath,
+		&ParamsProxy[atomic.DistributionCreateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -79,20 +77,20 @@ func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) DistributionUpdate(ctx context.Context, params *atomic.DistributionUpdateInput) (*atomic.Distribution, error) {
+	var resp ResponseProxy[atomic.Distribution]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
+	path := fmt.Sprintf(DistributionUpdatePath, params.DistributionID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodPut,
 		path,
-		&ParamsProxy[atomic.UserUpdateInput]{
+		&ParamsProxy[atomic.DistributionUpdateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -102,21 +100,29 @@ func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput) error {
+func (c *Client) DistributionDelete(ctx context.Context, params *atomic.DistributionDeleteInput) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 
-	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
+	path := fmt.Sprintf(DistributionDeletePath, params.DistributionID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.UserDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodDelete,
+		path,
+		&ParamsProxy[atomic.DistributionDeleteInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, nil); err != nil {
+		return err
+	}
+
+	return nil
 }
 
-func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
-	var resp ResponseProxy[[]*atomic.User]
+func (c *Client) DistributionList(ctx context.Context, params *atomic.DistributionListInput) ([]*atomic.Distribution, error) {
+	var resp ResponseProxy[[]*atomic.Distribution]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -125,8 +131,8 @@ func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
-		UserListPath,
-		&ParamsProxy[atomic.UserListInput]{
+		DistributionListPath,
+		&ParamsProxy[atomic.DistributionListInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {

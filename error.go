@@ -17,12 +17,13 @@
 
 package atomic
 
-import (
-	"context"
-)
-
 type (
-	Backend interface {
-		ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error
+	Error struct {
+		Code    string `json:"code,omitempty"`
+		Message string `json:"message,omitempty"`
 	}
 )
+
+func (e Error) Error() string {
+	return e.Message
+}

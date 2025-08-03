@@ -1,5 +1,5 @@
 /*
- * This file is part of the Atomic Stack (https://github.com/libatomic/atomic).
+ * This file is part of the Passport Atomic Stack (https://github.com/libatomic/atomic).
  * Copyright (c) 2024 Atomic Publishing.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,17 +18,23 @@
 package atomic
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
+	"io"
 	"net/http"
 	"strings"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/google/go-querystring/query"
+	"golang.org/x/oauth2/clientcredentials"
 )
 
 type (
 	ApiConfig struct {
-		Key  string
-		Host string
+		AccessToken string
+		Host        string
+		http        *http.Client
 	}
 
 	ApiBackend struct {
@@ -39,20 +45,22 @@ type (
 )
 
 const (
-	DefaultAPIHost = "https://api.passport.online"
+	DefaultAPIHost = "http://localhost:9000"
 )
 
-func NewApiBackend(opts ...ApiOption) *ApiBackend {
-	c := &ApiBackend{
+func New(opts ...ApiOption) *Client {
+	b := &ApiBackend{
 		ApiConfig{
 			Host: DefaultAPIHost,
+			http: http.DefaultClient,
 		},
 	}
 
 	for _, opt := range opts {
-		opt(&c.c)
+		opt(&b.c)
 	}
-	return c
+
+	return NewClient(b)
 }
 
 func WithHost(host string) ApiOption {
@@ -61,43 +69,129 @@ func WithHost(host string) ApiOption {
 	}
 }
 
-func WithKey(key string) ApiOption {
+func WithToken(token string) ApiOption {
 	return func(c *ApiConfig) {
-		c.Key = key
+		c.AccessToken = token
 	}
 }
 
-func (b *ApiBackend) ExecContext(ctx context.Context, method string, path string, params validation.Validatable, result Responder) error {
+func WithHTTPClient(http *http.Client) ApiOption {
+	return func(c *ApiConfig) {
+		c.http = http
+	}
+}
+
+func WithClientCredentials(clientID, clientSecret string, scopes ...string) ApiOption {
+	return func(c *ApiConfig) {
+		cc := clientcredentials.Config{
+			ClientID:     clientID,
+			ClientSecret: clientSecret,
+			Scopes:       scopes,
+			TokenURL:     "https://" + c.Host + "/oauth/token",
+		}
+
+		c.http = cc.Client(context.Background())
+	}
+}
+
+func (b *ApiBackend) ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error {
+	req, err := b.NewRequest(ctx, method, "https://"+b.c.Host+path, params)
+	if err != nil {
+		return err
+	}
+
+	resp, err := b.c.http.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode >= 400 {
+		if len(body) > 0 {
+			var e Error
+
+			if err := json.NewDecoder(bytes.NewReader(body)).Decode(&e); err != nil {
+				return err
+			}
+			return e
+		}
+
+		return errors.New(resp.Status)
+	}
+
+	if len(body) > 0 {
+		if err := json.NewDecoder(bytes.NewReader(body)).Decode(result.Response()); err != nil {
+			return err
+		}
+	}
 
 	return nil
 }
 
-func (b *ApiBackend) NewRequest(ctx context.Context, method, path, ct string, params *Params) (*http.Request, error) {
-	req, err := http.NewRequest(method, path, nil)
+func (b *ApiBackend) NewRequest(ctx context.Context, method string, path string, params ParamsContainer) (*http.Request, error) {
+	var body io.Reader
+
+	form := params.RequestParams()
+
+	ct := "application/json"
+
+	if t := params.RequestParams().Headers.Get("Content-Type"); t != "" {
+		ct = t
+	}
+
+	switch method {
+	case http.MethodPost, http.MethodPut, http.MethodPatch:
+		data, err := json.Marshal(params)
+		if err != nil {
+			return nil, err
+		}
+
+		body = bytes.NewReader(data)
+
+	case http.MethodGet, http.MethodDelete:
+		values, err := query.Values(params.MethodParams())
+		if err != nil {
+			return nil, err
+		}
+
+		path = path + "?" + values.Encode()
+	}
+
+	req, err := http.NewRequest(method, path, body)
 	if err != nil {
 		return nil, err
 	}
 
-	authorization := "Bearer " + b.c.Key
-
-	req.Header.Add("Authorization", authorization)
 	req.Header.Add("Content-Type", ct)
 
+	authorization := "Bearer " + b.c.AccessToken
+
 	if params != nil {
-		if params.Context != nil {
-			req = req.WithContext(params.Context)
+		if form.Context != nil {
+			req = req.WithContext(form.Context)
 		}
 
-		if params.Instance != nil {
-			req.Header.Add("Atomic-Instance", strings.TrimSpace(*params.Instance))
+		if form.Instance != nil {
+			req.Header.Add("Atomic-Instance", strings.TrimSpace(*form.Instance))
 		}
 
-		for k, v := range params.Headers {
+		for k, v := range form.Headers {
 			for _, line := range v {
 				// Use Set to override the default value possibly set before
 				req.Header.Set(k, line)
 			}
 		}
+
+		if !form.NoAuth && b.c.AccessToken != "" {
+			req.Header.Add("Authorization", authorization)
+		}
+	} else if b.c.AccessToken != "" {
+		req.Header.Add("Authorization", authorization)
 	}
 
 	return req, nil

@@ -19,10 +19,33 @@ package atomic
 
 import (
 	"context"
+	"net/http"
+
+	"github.com/libatomic/atomic/pkg/atomic"
+	"github.com/libatomic/atomic/pkg/email"
 )
 
-type (
-	Backend interface {
-		ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error
-	}
+const (
+	SendMailPath = "/api/1.0.0/mail"
 )
+
+func (c *Client) SendMail(ctx context.Context, params *atomic.SendMailInput) ([]*email.Message, error) {
+	var resp ResponseProxy[[]*email.Message]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodPost,
+		SendMailPath,
+		&ParamsProxy[atomic.SendMailInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Value(), nil
+}

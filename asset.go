@@ -26,27 +26,48 @@ import (
 )
 
 const (
-	UserGetPath    = "/api/1.0.0/users/%s"
-	UserCreatePath = "/api/1.0.0/users"
-	UserUpdatePath = "/api/1.0.0/users/%s"
-	UserDeletePath = "/api/1.0.0/users/%s"
-	UserListPath   = "/api/1.0.0/users"
+	AssetCreatePath = "/api/1.0.0/assets"
+	AssetGetPath    = "/api/1.0.0/assets/%s"
+	AssetUpdatePath = "/api/1.0.0/assets/%s"
+	AssetDeletePath = "/api/1.0.0/assets/%s"
+	AssetListPath   = "/api/1.0.0/assets"
 )
 
-func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) AssetCreate(ctx context.Context, params *atomic.AssetCreateInput) (*atomic.Asset, error) {
+	var resp ResponseProxy[atomic.Asset]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserGetPath, params.UserID.String())
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodPost,
+		AssetCreatePath,
+		&ParamsProxy[atomic.AssetCreateInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) AssetGet(ctx context.Context, params *atomic.AssetGetInput) (*atomic.Asset, error) {
+	var resp ResponseProxy[atomic.Asset]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(AssetGetPath, params.AssetID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
 		path,
-		&ParamsProxy[atomic.UserGetInput]{
+		&ParamsProxy[atomic.AssetGetInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -56,43 +77,20 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) AssetUpdate(ctx context.Context, params *atomic.AssetUpdateInput) (*atomic.Asset, error) {
+	var resp ResponseProxy[atomic.Asset]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserCreatePath)
-
-	if err := c.Backend.ExecContext(
-		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.UserCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp.Pointer(), nil
-}
-
-func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
+	path := fmt.Sprintf(AssetUpdatePath, params.AssetID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodPut,
 		path,
-		&ParamsProxy[atomic.UserUpdateInput]{
+		&ParamsProxy[atomic.AssetUpdateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -102,31 +100,27 @@ func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput) error {
+func (c *Client) AssetDelete(ctx context.Context, params *atomic.AssetDeleteInput) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 
-	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
+	path := fmt.Sprintf(AssetDeletePath, params.AssetID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.UserDeleteInput]{
+	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.AssetDeleteInput]{
 		methodParams:  *params,
 		requestParams: ParamsFromContext(ctx),
 	}, nil)
 }
 
-func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
-	var resp ResponseProxy[[]*atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AssetList(ctx context.Context, params *atomic.AssetListInput) ([]*atomic.Asset, error) {
+	var resp ResponseProxy[[]*atomic.Asset]
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
-		UserListPath,
-		&ParamsProxy[atomic.UserListInput]{
+		AssetListPath,
+		&ParamsProxy[atomic.AssetListInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {

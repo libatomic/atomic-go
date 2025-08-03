@@ -1,5 +1,5 @@
 /*
- * This file is part of the Atomic Stack (https://github.com/libatomic/atomic).
+ * This file is part of the Passport Atomic Stack (https://github.com/libatomic/atomic).
  * Copyright (c) 2024 Atomic Publishing.
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,27 +18,33 @@
 package atomic
 
 import (
-	"encoding/json"
+	"context"
 	"net/http"
+
+	"github.com/libatomic/atomic/pkg/atomic"
 )
 
-type (
-	Response struct {
-		Headers    http.Header     `json:"-"`
-		Body       json.RawMessage `json:"-"`
-		Status     string          `json:"-"`
-		StatusCode int             `json:"-"`
-	}
-
-	Resource struct {
-		LastResponse *Response `json:"-"`
-	}
-
-	Responder interface {
-		SetLastResponse(resp *Response)
-	}
+const (
+	SMSSendPath = "/api/1.0.0/sms"
 )
 
-func (r *Resource) SetLastResponse(resp *Response) {
-	r.LastResponse = resp
+func (c *Client) SendSMS(ctx context.Context, params *atomic.SendSMSInput) ([]*atomic.SMS, error) {
+	var resp ResponseProxy[[]*atomic.SMS]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodPost,
+		SMSSendPath,
+		&ParamsProxy[atomic.SendSMSInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Value(), nil
 }

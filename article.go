@@ -26,27 +26,48 @@ import (
 )
 
 const (
-	UserGetPath    = "/api/1.0.0/users/%s"
-	UserCreatePath = "/api/1.0.0/users"
-	UserUpdatePath = "/api/1.0.0/users/%s"
-	UserDeletePath = "/api/1.0.0/users/%s"
-	UserListPath   = "/api/1.0.0/users"
+	ArticleCreatePath = "/api/1.0.0/articles"
+	ArticleUpdatePath = "/api/1.0.0/articles/%s"
+	ArticleDeletePath = "/api/1.0.0/articles/%s"
+	ArticleListPath   = "/api/1.0.0/articles"
+	ArticleGetPath    = "/api/1.0.0/articles/%s"
 )
 
-func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) ArticleCreate(ctx context.Context, params *atomic.ArticleCreateInput) (*atomic.Article, error) {
+	var resp ResponseProxy[atomic.Article]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserGetPath, params.UserID.String())
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodPost,
+		ArticleCreatePath,
+		&ParamsProxy[atomic.ArticleCreateInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) ArticleGet(ctx context.Context, params *atomic.ArticleGetInput) (*atomic.Article, error) {
+	var resp ResponseProxy[atomic.Article]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(ArticleGetPath, params.ArticleID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
 		path,
-		&ParamsProxy[atomic.UserGetInput]{
+		&ParamsProxy[atomic.ArticleGetInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -56,43 +77,20 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) ArticleUpdate(ctx context.Context, params *atomic.ArticleUpdateInput) (*atomic.Article, error) {
+	var resp ResponseProxy[atomic.Article]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserCreatePath)
-
-	if err := c.Backend.ExecContext(
-		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.UserCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp.Pointer(), nil
-}
-
-func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
+	path := fmt.Sprintf(ArticleUpdatePath, params.ArticleID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodPut,
 		path,
-		&ParamsProxy[atomic.UserUpdateInput]{
+		&ParamsProxy[atomic.ArticleUpdateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -102,31 +100,27 @@ func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput) error {
+func (c *Client) ArticleDelete(ctx context.Context, params *atomic.ArticleDeleteInput) error {
 	if err := params.Validate(); err != nil {
 		return err
 	}
 
-	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
+	path := fmt.Sprintf(ArticleDeletePath, params.ArticleID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.UserDeleteInput]{
+	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.ArticleDeleteInput]{
 		methodParams:  *params,
 		requestParams: ParamsFromContext(ctx),
 	}, nil)
 }
 
-func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
-	var resp ResponseProxy[[]*atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ArticleList(ctx context.Context, params *atomic.ArticleListInput) ([]*atomic.Article, error) {
+	var resp ResponseProxy[[]*atomic.Article]
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
-		UserListPath,
-		&ParamsProxy[atomic.UserListInput]{
+		ArticleListPath,
+		&ParamsProxy[atomic.ArticleListInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {

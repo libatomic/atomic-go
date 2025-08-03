@@ -26,27 +26,26 @@ import (
 )
 
 const (
-	UserGetPath    = "/api/1.0.0/users/%s"
-	UserCreatePath = "/api/1.0.0/users"
-	UserUpdatePath = "/api/1.0.0/users/%s"
-	UserDeletePath = "/api/1.0.0/users/%s"
-	UserListPath   = "/api/1.0.0/users"
+	OptionGetPath    = "/api/1.0.0/options/%s"
+	OptionListPath   = "/api/1.0.0/options"
+	OptionUpdatePath = "/api/1.0.0/options/%s"
+	OptionRemovePath = "/api/1.0.0/options/%s"
 )
 
-func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
+func (c *Client) OptionGet(ctx context.Context, params *atomic.OptionGetInput) (*atomic.Option, error) {
+	var resp ResponseProxy[atomic.Option]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserGetPath, params.UserID.String())
+	path := fmt.Sprintf(OptionGetPath, params.Name)
 
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
 		path,
-		&ParamsProxy[atomic.UserGetInput]{
+		&ParamsProxy[atomic.OptionGetInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -56,67 +55,8 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(UserCreatePath)
-
-	if err := c.Backend.ExecContext(
-		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.UserCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp.Pointer(), nil
-}
-
-func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
-
-	if err := c.Backend.ExecContext(
-		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.UserUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
-		return nil, err
-	}
-
-	return resp.Pointer(), nil
-}
-
-func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
-	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
-
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.UserDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
-}
-
-func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
-	var resp ResponseProxy[[]*atomic.User]
+func (c *Client) OptionList(ctx context.Context, params *atomic.OptionListInput) ([]*atomic.Option, error) {
+	var resp ResponseProxy[[]*atomic.Option]
 
 	if err := params.Validate(); err != nil {
 		return nil, err
@@ -125,8 +65,8 @@ func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]
 	if err := c.Backend.ExecContext(
 		ctx,
 		http.MethodGet,
-		UserListPath,
-		&ParamsProxy[atomic.UserListInput]{
+		OptionListPath,
+		&ParamsProxy[atomic.OptionListInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -134,4 +74,48 @@ func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]
 	}
 
 	return resp.Value(), nil
+}
+
+func (c *Client) OptionUpdate(ctx context.Context, params *atomic.OptionUpdateInput) (*atomic.Option, error) {
+	var resp ResponseProxy[atomic.Option]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	path := fmt.Sprintf(OptionUpdatePath, params.Name)
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodPut,
+		path,
+		&ParamsProxy[atomic.OptionUpdateInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, &resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) OptionRemove(ctx context.Context, params *atomic.OptionRemoveInput) error {
+	if err := params.Validate(); err != nil {
+		return err
+	}
+
+	path := fmt.Sprintf(OptionRemovePath, params.Name)
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		http.MethodDelete,
+		path,
+		&ParamsProxy[atomic.OptionRemoveInput]{
+			methodParams:  *params,
+			requestParams: ParamsFromContext(ctx),
+		}, nil); err != nil {
+		return err
+	}
+
+	return nil
 }

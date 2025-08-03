@@ -18,11 +18,41 @@
 package atomic
 
 import (
-	"context"
+	"encoding/json"
+	"net/http"
 )
 
 type (
-	Backend interface {
-		ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error
+	Response struct {
+		Headers    http.Header     `json:"-"`
+		Body       json.RawMessage `json:"-"`
+		Status     string          `json:"-"`
+		StatusCode int             `json:"-"`
+	}
+
+	Resource[T any] struct {
+		r            T
+		LastResponse *Response `json:"-"`
+	}
+
+	Responder interface {
+		SetLastResponse(resp *Response)
+		Response() any
 	}
 )
+
+func (r *Resource[T]) SetLastResponse(resp *Response) {
+	r.LastResponse = resp
+}
+
+func (r *Resource[T]) Response() any {
+	return &r.r
+}
+
+func (r *Resource[T]) Pointer() *T {
+	return &r.r
+}
+
+func (r *Resource[T]) Value() T {
+	return r.r
+}
