@@ -22,11 +22,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
 
-	"github.com/google/go-querystring/query"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -94,8 +94,8 @@ func WithClientCredentials(clientID, clientSecret string, scopes ...string) ApiO
 	}
 }
 
-func (b *ApiBackend) ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error {
-	req, err := b.NewRequest(ctx, method, "https://"+b.c.Host+path, params)
+func (b *ApiBackend) ExecContext(ctx context.Context, params RequestContainer, result Responder) error {
+	req, err := b.NewRequest(ctx, params)
 	if err != nil {
 		return err
 	}
@@ -133,61 +133,37 @@ func (b *ApiBackend) ExecContext(ctx context.Context, method string, path string
 	return nil
 }
 
-func (b *ApiBackend) NewRequest(ctx context.Context, method string, path string, params ParamsContainer) (*http.Request, error) {
-	var body io.Reader
+func (b *ApiBackend) NewRequest(ctx context.Context, params RequestContainer) (*http.Request, error) {
+	reqParams := params.RequestParams()
 
-	form := params.RequestParams()
+	path := fmt.Sprintf("https://%s/%s", b.c.Host, strings.TrimPrefix(params.Path(), "/"))
 
-	ct := "application/json"
-
-	if t := params.RequestParams().Headers.Get("Content-Type"); t != "" {
-		ct = t
-	}
-
-	switch method {
-	case http.MethodPost, http.MethodPut, http.MethodPatch:
-		data, err := json.Marshal(params)
-		if err != nil {
-			return nil, err
-		}
-
-		body = bytes.NewReader(data)
-
-	case http.MethodGet, http.MethodDelete:
-		values, err := query.Values(params.MethodParams())
-		if err != nil {
-			return nil, err
-		}
-
-		path = path + "?" + values.Encode()
-	}
-
-	req, err := http.NewRequest(method, path, body)
+	req, err := http.NewRequest(params.Method(), path, params.Body())
 	if err != nil {
 		return nil, err
 	}
 
-	req.Header.Add("Content-Type", ct)
+	req.Header.Add("Content-Type", params.ContentType())
 
 	authorization := "Bearer " + b.c.AccessToken
 
 	if params != nil {
-		if form.Context != nil {
-			req = req.WithContext(form.Context)
+		if reqParams.Context != nil {
+			req = req.WithContext(reqParams.Context)
 		}
 
-		if form.Instance != nil {
-			req.Header.Add("Atomic-Instance", strings.TrimSpace(*form.Instance))
+		if reqParams.Instance != nil {
+			req.Header.Add("Atomic-Instance", strings.TrimSpace(*reqParams.Instance))
 		}
 
-		for k, v := range form.Headers {
+		for k, v := range reqParams.Headers {
 			for _, line := range v {
 				// Use Set to override the default value possibly set before
 				req.Header.Set(k, line)
 			}
 		}
 
-		if !form.NoAuth && b.c.AccessToken != "" {
+		if !reqParams.NoAuth && b.c.AccessToken != "" {
 			req.Header.Add("Authorization", authorization)
 		}
 	} else if b.c.AccessToken != "" {

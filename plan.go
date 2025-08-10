@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -45,12 +44,8 @@ func (c *Client) PlanGet(ctx context.Context, params *atomic.PlanGetInput) (*ato
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.PlanGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -66,12 +61,8 @@ func (c *Client) PlanCreate(ctx context.Context, params *atomic.PlanCreateInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		PlanCreatePath,
-		&ParamsProxy[atomic.PlanCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, PlanCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -89,12 +80,8 @@ func (c *Client) PlanUpdate(ctx context.Context, params *atomic.PlanUpdateInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.PlanUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -110,12 +97,9 @@ func (c *Client) PlanDelete(ctx context.Context, params *atomic.PlanDeleteInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.PlanDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 
@@ -131,12 +115,8 @@ func (c *Client) PlanList(ctx context.Context, params *atomic.PlanListInput) ([]
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		PlanListPath,
-		&ParamsProxy[atomic.PlanListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, PlanListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -154,12 +134,8 @@ func (c *Client) PlanSubscribe(ctx context.Context, params *atomic.PlanSubscribe
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.PlanSubscribeInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 

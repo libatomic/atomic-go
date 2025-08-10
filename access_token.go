@@ -61,12 +61,8 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *atomic.AccessTok
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.AccessTokenCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -82,9 +78,7 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *atomic.AccessTokenG
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		fmt.Sprintf(AccessTokenGetPath, params.AccessTokenID.String()),
-		&ParamsProxy[atomic.AccessTokenGetInput]{
+		&RequestProxy[atomic.AccessTokenGetInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 		}, &resp); err != nil {
@@ -103,11 +97,11 @@ func (c *Client) AccessTokenRevoke(ctx context.Context, params *atomic.AccessTok
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String()),
-		&ParamsProxy[atomic.AccessTokenRevokeInput]{
+		&RequestProxy[atomic.AccessTokenRevokeInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
+			method:        http.MethodPost,
+			path:          fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String()),
 		}, &resp); err != nil {
 		return err
 	}
@@ -124,11 +118,11 @@ func (c *Client) AccessTokenDelete(ctx context.Context, params *atomic.AccessTok
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		fmt.Sprintf(AccessTokenDeletePath, params.AccessTokenID.String()),
-		&ParamsProxy[atomic.AccessTokenDeleteInput]{
+		&RequestProxy[atomic.AccessTokenDeleteInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
+			method:        http.MethodDelete,
+			path:          fmt.Sprintf(AccessTokenDeletePath, params.AccessTokenID.String()),
 		}, &resp); err != nil {
 		return err
 	}

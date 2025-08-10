@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -44,12 +43,8 @@ func (c *Client) DistributionGet(ctx context.Context, params *atomic.Distributio
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.DistributionGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -65,12 +60,8 @@ func (c *Client) DistributionCreate(ctx context.Context, params *atomic.Distribu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		DistributionCreatePath,
-		&ParamsProxy[atomic.DistributionCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, DistributionCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +79,8 @@ func (c *Client) DistributionUpdate(ctx context.Context, params *atomic.Distribu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.DistributionUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -109,12 +96,9 @@ func (c *Client) DistributionDelete(ctx context.Context, params *atomic.Distribu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.DistributionDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 
@@ -130,12 +114,8 @@ func (c *Client) DistributionList(ctx context.Context, params *atomic.Distributi
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		DistributionListPath,
-		&ParamsProxy[atomic.DistributionListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, DistributionListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

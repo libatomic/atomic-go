@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -44,12 +43,8 @@ func (c *Client) AudienceGet(ctx context.Context, params *atomic.AudienceGetInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.AudienceGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -65,12 +60,8 @@ func (c *Client) AudienceCreate(ctx context.Context, params *atomic.AudienceCrea
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		AudienceCreatePath,
-		&ParamsProxy[atomic.AudienceCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, AudienceCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +79,8 @@ func (c *Client) AudienceUpdate(ctx context.Context, params *atomic.AudienceUpda
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.AudienceUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -109,12 +96,9 @@ func (c *Client) AudienceDelete(ctx context.Context, params *atomic.AudienceDele
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.AudienceDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 
@@ -130,12 +114,8 @@ func (c *Client) AudienceList(ctx context.Context, params *atomic.AudienceListIn
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		AudienceListPath,
-		&ParamsProxy[atomic.AudienceListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, AudienceListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

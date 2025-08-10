@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -43,12 +42,8 @@ func (c *Client) OptionGet(ctx context.Context, params *atomic.OptionGetInput) (
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.OptionGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -64,12 +59,8 @@ func (c *Client) OptionList(ctx context.Context, params *atomic.OptionListInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		OptionListPath,
-		&ParamsProxy[atomic.OptionListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, OptionListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -87,12 +78,8 @@ func (c *Client) OptionUpdate(ctx context.Context, params *atomic.OptionUpdateIn
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.OptionUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -108,12 +95,9 @@ func (c *Client) OptionRemove(ctx context.Context, params *atomic.OptionRemoveIn
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.OptionRemoveInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 

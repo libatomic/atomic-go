@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -42,12 +41,8 @@ func (c *Client) AssetCreate(ctx context.Context, params *atomic.AssetCreateInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		AssetCreatePath,
-		&ParamsProxy[atomic.AssetCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, AssetCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -65,12 +60,8 @@ func (c *Client) AssetGet(ctx context.Context, params *atomic.AssetGetInput) (*a
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.AssetGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +79,8 @@ func (c *Client) AssetUpdate(ctx context.Context, params *atomic.AssetUpdateInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.AssetUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -107,10 +94,11 @@ func (c *Client) AssetDelete(ctx context.Context, params *atomic.AssetDeleteInpu
 
 	path := fmt.Sprintf(AssetDeletePath, params.AssetID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.AssetDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
+	return c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	)
 }
 
 func (c *Client) AssetList(ctx context.Context, params *atomic.AssetListInput) ([]*atomic.Asset, error) {
@@ -118,12 +106,8 @@ func (c *Client) AssetList(ctx context.Context, params *atomic.AssetListInput) (
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		AssetListPath,
-		&ParamsProxy[atomic.AssetListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, AssetListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

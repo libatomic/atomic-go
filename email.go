@@ -19,7 +19,6 @@ package atomic
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 	"github.com/libatomic/atomic/pkg/email"
@@ -38,12 +37,8 @@ func (c *Client) SendMail(ctx context.Context, params *atomic.SendMailInput) ([]
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		SendMailPath,
-		&ParamsProxy[atomic.SendMailInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, SendMailPath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 

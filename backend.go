@@ -23,6 +23,6 @@ import (
 
 type (
 	Backend interface {
-		ExecContext(ctx context.Context, method string, path string, params ParamsContainer, result Responder) error
+		ExecContext(ctx context.Context, params RequestContainer, result Responder) error
 	}
 )

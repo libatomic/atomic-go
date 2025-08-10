@@ -19,7 +19,6 @@ package atomic
 
 import (
 	"context"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -37,12 +36,8 @@ func (c *Client) SendSMS(ctx context.Context, params *atomic.SendSMSInput) ([]*a
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		SMSSendPath,
-		&ParamsProxy[atomic.SendSMSInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, SMSSendPath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 

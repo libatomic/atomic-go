@@ -42,11 +42,11 @@ func (c *Client) ApplicationCreate(ctx context.Context, params *atomic.Applicati
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		ApplicationCreatePath,
-		&ParamsProxy[atomic.ApplicationCreateInput]{
+		&RequestProxy[atomic.ApplicationCreateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
+			method:        http.MethodPost,
+			path:          ApplicationCreatePath,
 		}, &resp); err != nil {
 		return nil, err
 	}
@@ -65,12 +65,8 @@ func (c *Client) ApplicationGet(ctx context.Context, params *atomic.ApplicationG
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.ApplicationGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +84,8 @@ func (c *Client) ApplicationUpdate(ctx context.Context, params *atomic.Applicati
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.ApplicationUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -107,10 +99,11 @@ func (c *Client) ApplicationDelete(ctx context.Context, params *atomic.Applicati
 
 	path := fmt.Sprintf(ApplicationDeletePath, params.ApplicationID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.ApplicationDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
+	return c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	)
 }
 
 func (c *Client) ApplicationList(ctx context.Context, params *atomic.ApplicationListInput) ([]*atomic.Application, error) {
@@ -118,12 +111,8 @@ func (c *Client) ApplicationList(ctx context.Context, params *atomic.Application
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		ApplicationListPath,
-		&ParamsProxy[atomic.ApplicationListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, ApplicationListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

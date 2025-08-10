@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -44,12 +43,8 @@ func (c *Client) PriceGet(ctx context.Context, params *atomic.PriceGetInput) (*a
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.PriceGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -65,12 +60,8 @@ func (c *Client) PriceCreate(ctx context.Context, params *atomic.PriceCreateInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		PriceCreatePath,
-		&ParamsProxy[atomic.PriceCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, PriceCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +79,8 @@ func (c *Client) PriceUpdate(ctx context.Context, params *atomic.PriceUpdateInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.PriceUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -109,12 +96,9 @@ func (c *Client) PriceDelete(ctx context.Context, params *atomic.PriceDeleteInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.PriceDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 
@@ -130,12 +114,8 @@ func (c *Client) PriceList(ctx context.Context, params *atomic.PriceListInput) (
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		PriceListPath,
-		&ParamsProxy[atomic.PriceListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, PriceListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

@@ -18,9 +18,14 @@
 package atomic
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
-	"net/http"
+	"io"
+	"mime/multipart"
+	"net/textproto"
+	"strconv"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -31,6 +36,7 @@ const (
 	UserUpdatePath = "/api/1.0.0/users/%s"
 	UserDeletePath = "/api/1.0.0/users/%s"
 	UserListPath   = "/api/1.0.0/users"
+	UserImportPath = "/api/1.0.0/users/import"
 )
 
 func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
@@ -44,12 +50,8 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.UserGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -67,12 +69,8 @@ func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		path,
-		&ParamsProxy[atomic.UserCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -90,12 +88,8 @@ func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.UserUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -109,10 +103,11 @@ func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput)
 
 	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.UserDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
+	return c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	)
 }
 
 func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
@@ -124,14 +119,61 @@ func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		UserListPath,
-		&ParamsProxy[atomic.UserListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, UserListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
 	return resp.Value(), nil
+}
+
+func (c *Client) UserImport(ctx context.Context, params *atomic.UserImportInput) (*atomic.Job, error) {
+	var resp ResponseProxy[atomic.Job]
+
+	if err := params.Validate(); err != nil {
+		return nil, err
+	}
+
+	if params.File == nil {
+		return nil, errors.New("file is required")
+	}
+
+	if params.Filename == "" {
+		return nil, errors.New("filename is required")
+	}
+
+	var body bytes.Buffer
+
+	writer := multipart.NewWriter(&body)
+
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition",
+		fmt.Sprintf(`form-data; name="%s"; filename="%s"`, "file", params.Filename))
+	h.Set("Content-Type", params.MimeType)
+	h.Set("Content-Length", strconv.FormatInt(params.Size, 10))
+
+	part, err := writer.CreatePart(h)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create multipart part: %w", err)
+	}
+
+	if _, err := io.Copy(part, params.File); err != nil {
+		return nil, fmt.Errorf("failed to copy file to multipart writer: %w", err)
+	}
+
+	if err := writer.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close multipart writer: %w", err)
+	}
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, UserImportPath, params).Post().
+			WithContentType(writer.FormDataContentType()).
+			WithEncoding(ParamsEncodingQuery).
+			WithBody(&body),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
 }

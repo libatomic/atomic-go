@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -42,12 +41,8 @@ func (c *Client) ArticleCreate(ctx context.Context, params *atomic.ArticleCreate
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		ArticleCreatePath,
-		&ParamsProxy[atomic.ArticleCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, ArticleCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -65,12 +60,8 @@ func (c *Client) ArticleGet(ctx context.Context, params *atomic.ArticleGetInput)
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.ArticleGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -88,12 +79,8 @@ func (c *Client) ArticleUpdate(ctx context.Context, params *atomic.ArticleUpdate
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.ArticleUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -107,10 +94,11 @@ func (c *Client) ArticleDelete(ctx context.Context, params *atomic.ArticleDelete
 
 	path := fmt.Sprintf(ArticleDeletePath, params.ArticleID.String())
 
-	return c.Backend.ExecContext(ctx, http.MethodDelete, path, &ParamsProxy[atomic.ArticleDeleteInput]{
-		methodParams:  *params,
-		requestParams: ParamsFromContext(ctx),
-	}, nil)
+	return c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	)
 }
 
 func (c *Client) ArticleList(ctx context.Context, params *atomic.ArticleListInput) ([]*atomic.Article, error) {
@@ -118,12 +106,8 @@ func (c *Client) ArticleList(ctx context.Context, params *atomic.ArticleListInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		ArticleListPath,
-		&ParamsProxy[atomic.ArticleListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, ArticleListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 

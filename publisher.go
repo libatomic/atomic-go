@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -42,9 +41,7 @@ func (c *Client) PublisherCreate(ctx context.Context, params *atomic.PublisherCr
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		PublisherCreatePath,
-		NewParamsProxy(ctx, params),
+		NewRequest(ctx, PublisherCreatePath, params).Post(),
 		&resp); err != nil {
 		return nil, err
 	}
@@ -61,9 +58,7 @@ func (c *Client) PublisherUpdate(ctx context.Context, params *atomic.PublisherUp
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		fmt.Sprintf(PublisherUpdatePath, params.PublisherID.String()),
-		NewParamsProxy(ctx, params),
+		NewRequest(ctx, fmt.Sprintf(PublisherUpdatePath, params.PublisherID.String()), params).Put(),
 		&resp); err != nil {
 		return nil, err
 	}
@@ -80,9 +75,7 @@ func (c *Client) PublisherGet(ctx context.Context, params *atomic.PublisherGetIn
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		fmt.Sprintf(PublisherGetPath, params.PublisherID.String()),
-		NewParamsProxy(ctx, params),
+		NewRequest(ctx, fmt.Sprintf(PublisherGetPath, params.PublisherID.String()), params).Get(),
 		&resp); err != nil {
 		return nil, err
 	}
@@ -99,9 +92,7 @@ func (c *Client) PublisherList(ctx context.Context, params *atomic.PublisherList
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		PublisherListPath,
-		NewParamsProxy(ctx, params),
+		NewRequest(ctx, PublisherListPath, params).Get(),
 		&resp); err != nil {
 		return nil, err
 	}
@@ -118,9 +109,7 @@ func (c *Client) PublisherDelete(ctx context.Context, params *atomic.PublisherDe
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		fmt.Sprintf(PublisherDeletePath, params.PublisherID.String()),
-		NewParamsProxy(ctx, params),
+		NewRequest(ctx, fmt.Sprintf(PublisherDeletePath, params.PublisherID.String()), params).Delete(),
 		&resp); err != nil {
 		return err
 	}

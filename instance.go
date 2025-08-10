@@ -20,7 +20,6 @@ package atomic
 import (
 	"context"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -42,12 +41,8 @@ func (c *Client) InstanceCreate(ctx context.Context, params *atomic.InstanceCrea
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPost,
-		InstanceCreatePath,
-		&ParamsProxy[atomic.InstanceCreateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, InstanceCreatePath, params).Post(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -69,12 +64,8 @@ func (c *Client) InstanceGet(ctx context.Context, params *atomic.InstanceGetInpu
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		path,
-		&ParamsProxy[atomic.InstanceGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -90,12 +81,8 @@ func (c *Client) InstanceList(ctx context.Context, params *atomic.InstanceListIn
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodGet,
-		InstanceListPath,
-		&ParamsProxy[atomic.InstanceListInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, InstanceListPath, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -113,12 +100,8 @@ func (c *Client) InstanceUpdate(ctx context.Context, params *atomic.InstanceUpda
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodPut,
-		path,
-		&ParamsProxy[atomic.InstanceUpdateInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Put(),
+		&resp); err != nil {
 		return nil, err
 	}
 
@@ -134,12 +117,9 @@ func (c *Client) InstanceDelete(ctx context.Context, params *atomic.InstanceDele
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		http.MethodDelete,
-		path,
-		&ParamsProxy[atomic.InstanceDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, nil); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	); err != nil {
 		return err
 	}
 
