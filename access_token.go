@@ -76,12 +76,16 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *atomic.AccessTokenG
 		return nil, err
 	}
 
+	path := fmt.Sprintf(AccessTokenGetPath, params.AccessTokenID.String())
+
+	if params.AccessTokenID == nil {
+		return nil, errors.New("token_id is required")
+	}
+
 	if err := c.Backend.ExecContext(
 		ctx,
-		&RequestProxy[atomic.AccessTokenGetInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
 		return nil, err
 	}
 
