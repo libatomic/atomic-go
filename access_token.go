@@ -61,7 +61,7 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *atomic.AccessTok
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Post(),
+		NewRequest(ctx, path, params).Get(),
 		&resp); err != nil {
 		return nil, err
 	}
