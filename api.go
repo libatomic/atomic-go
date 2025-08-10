@@ -45,7 +45,7 @@ type (
 )
 
 const (
-	DefaultAPIHost = "http://localhost:9000"
+	DefaultAPIHost = "localhost:9000"
 )
 
 func New(opts ...ApiOption) *Client {
