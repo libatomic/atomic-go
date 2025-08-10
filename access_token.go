@@ -21,25 +21,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 
 	"github.com/libatomic/atomic/pkg/atomic"
-)
-
-type (
-	AccessTokenBackend interface {
-		AccessTokenCreate(ctx context.Context, params *atomic.AccessTokenCreateInput) (*atomic.AccessToken, error)
-		AccessTokenGet(ctx context.Context, params *atomic.AccessTokenGetInput) (*atomic.AccessToken, error)
-		AccessTokenRevoke(ctx context.Context, params *atomic.AccessTokenRevokeInput) error
-		AccessTokenDelete(ctx context.Context, params *atomic.AccessTokenDeleteInput) error
-	}
 )
 
 const (
 	UserTokenCreatePath   = "/api/1.0.0/users/%s/tokens"
 	AppTokenCreatePath    = "/api/1.0.0/applications/%s/tokens"
 	AccessTokenGetPath    = "/api/1.0.0/tokens/%s"
-	AccessTokenRevokePath = "/api/1.0.0/tokens/%s/revoke"
+	AccessTokenRevokePath = "/api/1.0.0/tokens/%s"
 	AccessTokenDeletePath = "/api/1.0.0/tokens/%s"
 )
 
@@ -93,41 +83,16 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *atomic.AccessTokenG
 }
 
 func (c *Client) AccessTokenRevoke(ctx context.Context, params *atomic.AccessTokenRevokeInput) error {
-	var resp ResponseProxy[atomic.AccessToken]
-
 	if err := params.Validate(); err != nil {
 		return err
 	}
 
-	if err := c.Backend.ExecContext(
-		ctx,
-		&RequestProxy[atomic.AccessTokenRevokeInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-			method:        http.MethodPost,
-			path:          fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String()),
-		}, &resp); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (c *Client) AccessTokenDelete(ctx context.Context, params *atomic.AccessTokenDeleteInput) error {
-	var resp ResponseProxy[atomic.AccessToken]
-
-	if err := params.Validate(); err != nil {
-		return err
-	}
+	path := fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String())
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		&RequestProxy[atomic.AccessTokenDeleteInput]{
-			methodParams:  *params,
-			requestParams: ParamsFromContext(ctx),
-			method:        http.MethodDelete,
-			path:          fmt.Sprintf(AccessTokenDeletePath, params.AccessTokenID.String()),
-		}, &resp); err != nil {
+		NewRequest(ctx, path, params).Delete(),
+		nil); err != nil {
 		return err
 	}
 
