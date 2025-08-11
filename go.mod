@@ -8,7 +8,7 @@ require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/google/go-querystring v1.1.0
 	github.com/gorilla/schema v1.4.1
-	github.com/libatomic/atomic v1.1.10-alpha.9
+	github.com/libatomic/atomic v1.1.10-alpha.10
 	golang.org/x/oauth2 v0.30.0
 )
 
@@ -24,7 +24,6 @@ require (
 	github.com/apex/log v1.9.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
 	github.com/aws/aws-lambda-go v1.49.0 // indirect
-	github.com/aws/aws-sdk-go v1.55.8 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.37.2 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.0 // indirect
 	github.com/aws/aws-sdk-go-v2/config v1.30.3 // indirect
