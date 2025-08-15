@@ -65,11 +65,9 @@ func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput)
 		return nil, err
 	}
 
-	path := fmt.Sprintf(UserCreatePath)
-
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Post(),
+		NewRequest(ctx, UserCreatePath, params).Post(),
 		&resp); err != nil {
 		return nil, err
 	}
