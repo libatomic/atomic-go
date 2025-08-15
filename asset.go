@@ -18,8 +18,14 @@
 package atomic
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
+	"io"
+	"mime/multipart"
+	"net/textproto"
+	"strconv"
 
 	"github.com/libatomic/atomic/pkg/atomic"
 )
@@ -39,9 +45,43 @@ func (c *Client) AssetCreate(ctx context.Context, params *atomic.AssetCreateInpu
 		return nil, err
 	}
 
+	if params.Payload == nil {
+		return nil, errors.New("payload is required")
+	}
+
+	if params.Filename == "" {
+		return nil, errors.New("filename is required")
+	}
+
+	var body bytes.Buffer
+
+	writer := multipart.NewWriter(&body)
+
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition",
+		fmt.Sprintf(`form-data; name="%s"; filename="%s"`, "file", params.Filename))
+	h.Set("Content-Type", params.MimeType)
+	h.Set("Content-Length", strconv.FormatInt(params.Size, 10))
+
+	part, err := writer.CreatePart(h)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create multipart part: %w", err)
+	}
+
+	if _, err := io.Copy(part, params.Payload); err != nil {
+		return nil, fmt.Errorf("failed to copy file to multipart writer: %w", err)
+	}
+
+	if err := writer.Close(); err != nil {
+		return nil, fmt.Errorf("failed to close multipart writer: %w", err)
+	}
+
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, AssetCreatePath, params).Post(),
+		NewRequest(ctx, AssetCreatePath, params).Post().
+			WithContentType(writer.FormDataContentType()).
+			WithEncoding(ParamsEncodingQuery).
+			WithBody(&body),
 		&resp); err != nil {
 		return nil, err
 	}
