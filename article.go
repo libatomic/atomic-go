@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Article            = atomic.Article
+	ArticleCreateInput = atomic.ArticleCreateInput
+	ArticleGetInput    = atomic.ArticleGetInput
+	ArticleUpdateInput = atomic.ArticleUpdateInput
+	ArticleDeleteInput = atomic.ArticleDeleteInput
+	ArticleListInput   = atomic.ArticleListInput
+)
+
 const (
 	ArticleCreatePath = "/api/1.0.0/articles"
 	ArticleUpdatePath = "/api/1.0.0/articles/%s"
@@ -32,12 +41,8 @@ const (
 	ArticleGetPath    = "/api/1.0.0/articles/%s"
 )
 
-func (c *Client) ArticleCreate(ctx context.Context, params *atomic.ArticleCreateInput) (*atomic.Article, error) {
-	var resp ResponseProxy[atomic.Article]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ArticleCreate(ctx context.Context, params *ArticleCreateInput) (*Article, error) {
+	var resp ResponseProxy[Article]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -49,12 +54,8 @@ func (c *Client) ArticleCreate(ctx context.Context, params *atomic.ArticleCreate
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ArticleGet(ctx context.Context, params *atomic.ArticleGetInput) (*atomic.Article, error) {
-	var resp ResponseProxy[atomic.Article]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ArticleGet(ctx context.Context, params *ArticleGetInput) (*Article, error) {
+	var resp ResponseProxy[Article]
 
 	path := fmt.Sprintf(ArticleGetPath, params.ArticleID.String())
 
@@ -68,12 +69,8 @@ func (c *Client) ArticleGet(ctx context.Context, params *atomic.ArticleGetInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ArticleUpdate(ctx context.Context, params *atomic.ArticleUpdateInput) (*atomic.Article, error) {
-	var resp ResponseProxy[atomic.Article]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ArticleUpdate(ctx context.Context, params *ArticleUpdateInput) (*Article, error) {
+	var resp ResponseProxy[Article]
 
 	path := fmt.Sprintf(ArticleUpdatePath, params.ArticleID.String())
 
@@ -87,11 +84,7 @@ func (c *Client) ArticleUpdate(ctx context.Context, params *atomic.ArticleUpdate
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ArticleDelete(ctx context.Context, params *atomic.ArticleDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) ArticleDelete(ctx context.Context, params *ArticleDeleteInput) error {
 	path := fmt.Sprintf(ArticleDeletePath, params.ArticleID.String())
 
 	return c.Backend.ExecContext(
@@ -101,8 +94,8 @@ func (c *Client) ArticleDelete(ctx context.Context, params *atomic.ArticleDelete
 	)
 }
 
-func (c *Client) ArticleList(ctx context.Context, params *atomic.ArticleListInput) ([]*atomic.Article, error) {
-	var resp ResponseProxy[[]*atomic.Article]
+func (c *Client) ArticleList(ctx context.Context, params *ArticleListInput) ([]*Article, error) {
+	var resp ResponseProxy[[]*Article]
 
 	if err := c.Backend.ExecContext(
 		ctx,

@@ -25,6 +25,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Application            = atomic.Application
+	ApplicationCreateInput = atomic.ApplicationCreateInput
+	ApplicationGetInput    = atomic.ApplicationGetInput
+	ApplicationUpdateInput = atomic.ApplicationUpdateInput
+	ApplicationDeleteInput = atomic.ApplicationDeleteInput
+	ApplicationListInput   = atomic.ApplicationListInput
+)
+
 const (
 	ApplicationGetPath    = "/api/1.0.0/applications/%s"
 	ApplicationCreatePath = "/api/1.0.0/applications"
@@ -33,16 +42,12 @@ const (
 	ApplicationListPath   = "/api/1.0.0/applications"
 )
 
-func (c *Client) ApplicationCreate(ctx context.Context, params *atomic.ApplicationCreateInput) (*atomic.Application, error) {
-	var resp ResponseProxy[atomic.Application]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ApplicationCreate(ctx context.Context, params *ApplicationCreateInput) (*Application, error) {
+	var resp ResponseProxy[Application]
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		&RequestProxy[atomic.ApplicationCreateInput]{
+		&RequestProxy[ApplicationCreateInput]{
 			methodParams:  *params,
 			requestParams: ParamsFromContext(ctx),
 			method:        http.MethodPost,
@@ -54,12 +59,8 @@ func (c *Client) ApplicationCreate(ctx context.Context, params *atomic.Applicati
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ApplicationGet(ctx context.Context, params *atomic.ApplicationGetInput) (*atomic.Application, error) {
-	var resp ResponseProxy[atomic.Application]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ApplicationGet(ctx context.Context, params *ApplicationGetInput) (*Application, error) {
+	var resp ResponseProxy[Application]
 
 	path := fmt.Sprintf(ApplicationGetPath, params.ApplicationID.String())
 
@@ -73,12 +74,8 @@ func (c *Client) ApplicationGet(ctx context.Context, params *atomic.ApplicationG
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ApplicationUpdate(ctx context.Context, params *atomic.ApplicationUpdateInput) (*atomic.Application, error) {
-	var resp ResponseProxy[atomic.Application]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) ApplicationUpdate(ctx context.Context, params *ApplicationUpdateInput) (*Application, error) {
+	var resp ResponseProxy[Application]
 
 	path := fmt.Sprintf(ApplicationUpdatePath, params.ApplicationID.String())
 
@@ -92,11 +89,7 @@ func (c *Client) ApplicationUpdate(ctx context.Context, params *atomic.Applicati
 	return resp.Pointer(), nil
 }
 
-func (c *Client) ApplicationDelete(ctx context.Context, params *atomic.ApplicationDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) ApplicationDelete(ctx context.Context, params *ApplicationDeleteInput) error {
 	path := fmt.Sprintf(ApplicationDeletePath, params.ApplicationID.String())
 
 	return c.Backend.ExecContext(

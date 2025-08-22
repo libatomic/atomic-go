@@ -25,6 +25,13 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	AccessToken            = atomic.AccessToken
+	AccessTokenCreateInput = atomic.AccessTokenCreateInput
+	AccessTokenGetInput    = atomic.AccessTokenGetInput
+	AccessTokenRevokeInput = atomic.AccessTokenRevokeInput
+)
+
 const (
 	UserTokenCreatePath   = "/api/1.0.0/users/%s/tokens"
 	AppTokenCreatePath    = "/api/1.0.0/applications/%s/tokens"
@@ -33,13 +40,9 @@ const (
 	AccessTokenDeletePath = "/api/1.0.0/tokens/%s"
 )
 
-func (c *Client) AccessTokenCreate(ctx context.Context, params *atomic.AccessTokenCreateInput) (*atomic.AccessToken, error) {
-	var resp ResponseProxy[atomic.AccessToken]
+func (c *Client) AccessTokenCreate(ctx context.Context, params *AccessTokenCreateInput) (*AccessToken, error) {
+	var resp ResponseProxy[AccessToken]
 	var path string
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
 
 	if params.UserID != nil {
 		path = fmt.Sprintf(UserTokenCreatePath, params.UserID.String())
@@ -59,12 +62,8 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *atomic.AccessTok
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AccessTokenGet(ctx context.Context, params *atomic.AccessTokenGetInput) (*atomic.AccessToken, error) {
-	var resp ResponseProxy[atomic.AccessToken]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AccessTokenGet(ctx context.Context, params *AccessTokenGetInput) (*AccessToken, error) {
+	var resp ResponseProxy[AccessToken]
 
 	path := fmt.Sprintf(AccessTokenGetPath, params.AccessTokenID.String())
 
@@ -82,11 +81,7 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *atomic.AccessTokenG
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AccessTokenRevoke(ctx context.Context, params *atomic.AccessTokenRevokeInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) AccessTokenRevoke(ctx context.Context, params *AccessTokenRevokeInput) error {
 	path := fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String())
 
 	if err := c.Backend.ExecContext(

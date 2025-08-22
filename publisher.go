@@ -24,6 +24,16 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Publisher            = atomic.Publisher
+	PublisherListOutput  = atomic.PublisherListOutput
+	PublisherCreateInput = atomic.PublisherCreateInput
+	PublisherUpdateInput = atomic.PublisherUpdateInput
+	PublisherGetInput    = atomic.PublisherGetInput
+	PublisherListInput   = atomic.PublisherListInput
+	PublisherDeleteInput = atomic.PublisherDeleteInput
+)
+
 const (
 	PublisherCreatePath = "/api/1.0.0/publishers"
 	PublisherUpdatePath = "/api/1.0.0/publishers/%s"
@@ -32,12 +42,8 @@ const (
 	PublisherDeletePath = "/api/1.0.0/publishers/%s"
 )
 
-func (c *Client) PublisherCreate(ctx context.Context, params *atomic.PublisherCreateInput) (*atomic.Publisher, error) {
-	var resp ResponseProxy[atomic.Publisher]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PublisherCreate(ctx context.Context, params *PublisherCreateInput) (*Publisher, error) {
+	var resp ResponseProxy[Publisher]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -49,12 +55,8 @@ func (c *Client) PublisherCreate(ctx context.Context, params *atomic.PublisherCr
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PublisherUpdate(ctx context.Context, params *atomic.PublisherUpdateInput) (*atomic.Publisher, error) {
-	var resp ResponseProxy[atomic.Publisher]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PublisherUpdate(ctx context.Context, params *PublisherUpdateInput) (*Publisher, error) {
+	var resp ResponseProxy[Publisher]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -66,12 +68,8 @@ func (c *Client) PublisherUpdate(ctx context.Context, params *atomic.PublisherUp
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PublisherGet(ctx context.Context, params *atomic.PublisherGetInput) (*atomic.Publisher, error) {
-	var resp ResponseProxy[atomic.Publisher]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PublisherGet(ctx context.Context, params *PublisherGetInput) (*Publisher, error) {
+	var resp ResponseProxy[Publisher]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -83,12 +81,8 @@ func (c *Client) PublisherGet(ctx context.Context, params *atomic.PublisherGetIn
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PublisherList(ctx context.Context, params *atomic.PublisherListInput) (*atomic.PublisherListOutput, error) {
-	var resp ResponseProxy[atomic.PublisherListOutput]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PublisherList(ctx context.Context, params *PublisherListInput) (*PublisherListOutput, error) {
+	var resp ResponseProxy[PublisherListOutput]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -100,12 +94,8 @@ func (c *Client) PublisherList(ctx context.Context, params *atomic.PublisherList
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PublisherDelete(ctx context.Context, params *atomic.PublisherDeleteInput) error {
-	var resp ResponseProxy[atomic.Publisher]
-
-	if err := params.Validate(); err != nil {
-		return err
-	}
+func (c *Client) PublisherDelete(ctx context.Context, params *PublisherDeleteInput) error {
+	var resp ResponseProxy[Publisher]
 
 	if err := c.Backend.ExecContext(
 		ctx,

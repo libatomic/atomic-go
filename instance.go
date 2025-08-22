@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Instance            = atomic.Instance
+	InstanceCreateInput = atomic.InstanceCreateInput
+	InstanceGetInput    = atomic.InstanceGetInput
+	InstanceListInput   = atomic.InstanceListInput
+	InstanceUpdateInput = atomic.InstanceUpdateInput
+	InstanceDeleteInput = atomic.InstanceDeleteInput
+)
+
 const (
 	InstanceCreatePath = "/api/1.0.0/instances"
 	InstanceGetPath    = "/api/1.0.0/instances/%s"
@@ -32,12 +41,8 @@ const (
 	InstanceDeletePath = "/api/1.0.0/instances/%s"
 )
 
-func (c *Client) InstanceCreate(ctx context.Context, params *atomic.InstanceCreateInput) (*atomic.Instance, error) {
-	var resp ResponseProxy[atomic.Instance]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) InstanceCreate(ctx context.Context, params *InstanceCreateInput) (*Instance, error) {
+	var resp ResponseProxy[Instance]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -49,12 +54,8 @@ func (c *Client) InstanceCreate(ctx context.Context, params *atomic.InstanceCrea
 	return resp.Pointer(), nil
 }
 
-func (c *Client) InstanceGet(ctx context.Context, params *atomic.InstanceGetInput) (*atomic.Instance, error) {
-	var resp ResponseProxy[atomic.Instance]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) InstanceGet(ctx context.Context, params *InstanceGetInput) (*Instance, error) {
+	var resp ResponseProxy[Instance]
 
 	if params.InstanceID == nil {
 		return nil, fmt.Errorf("instance_id is required")
@@ -72,12 +73,8 @@ func (c *Client) InstanceGet(ctx context.Context, params *atomic.InstanceGetInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) InstanceList(ctx context.Context, params *atomic.InstanceListInput) ([]*atomic.Instance, error) {
-	var resp ResponseProxy[[]*atomic.Instance]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) InstanceList(ctx context.Context, params *InstanceListInput) ([]*Instance, error) {
+	var resp ResponseProxy[[]*Instance]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -89,12 +86,8 @@ func (c *Client) InstanceList(ctx context.Context, params *atomic.InstanceListIn
 	return resp.Value(), nil
 }
 
-func (c *Client) InstanceUpdate(ctx context.Context, params *atomic.InstanceUpdateInput) (*atomic.Instance, error) {
-	var resp ResponseProxy[atomic.Instance]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) InstanceUpdate(ctx context.Context, params *InstanceUpdateInput) (*Instance, error) {
+	var resp ResponseProxy[Instance]
 
 	path := fmt.Sprintf(InstanceUpdatePath, params.InstanceID.String())
 
@@ -108,11 +101,7 @@ func (c *Client) InstanceUpdate(ctx context.Context, params *atomic.InstanceUpda
 	return resp.Pointer(), nil
 }
 
-func (c *Client) InstanceDelete(ctx context.Context, params *atomic.InstanceDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) InstanceDelete(ctx context.Context, params *InstanceDeleteInput) error {
 	path := fmt.Sprintf(InstanceDeletePath, params.InstanceID.String())
 
 	if err := c.Backend.ExecContext(

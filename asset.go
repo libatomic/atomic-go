@@ -30,6 +30,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Asset            = atomic.Asset
+	AssetCreateInput = atomic.AssetCreateInput
+	AssetGetInput    = atomic.AssetGetInput
+	AssetUpdateInput = atomic.AssetUpdateInput
+	AssetDeleteInput = atomic.AssetDeleteInput
+	AssetListInput   = atomic.AssetListInput
+)
+
 const (
 	AssetCreatePath = "/api/1.0.0/assets"
 	AssetGetPath    = "/api/1.0.0/assets/%s"
@@ -38,12 +47,8 @@ const (
 	AssetListPath   = "/api/1.0.0/assets"
 )
 
-func (c *Client) AssetCreate(ctx context.Context, params *atomic.AssetCreateInput) (*atomic.Asset, error) {
-	var resp ResponseProxy[atomic.Asset]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AssetCreate(ctx context.Context, params *AssetCreateInput) (*Asset, error) {
+	var resp ResponseProxy[Asset]
 
 	if params.Payload == nil {
 		return nil, errors.New("payload is required")
@@ -89,12 +94,8 @@ func (c *Client) AssetCreate(ctx context.Context, params *atomic.AssetCreateInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AssetGet(ctx context.Context, params *atomic.AssetGetInput) (*atomic.Asset, error) {
-	var resp ResponseProxy[atomic.Asset]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AssetGet(ctx context.Context, params *AssetGetInput) (*Asset, error) {
+	var resp ResponseProxy[Asset]
 
 	path := fmt.Sprintf(AssetGetPath, params.AssetID.String())
 
@@ -108,12 +109,8 @@ func (c *Client) AssetGet(ctx context.Context, params *atomic.AssetGetInput) (*a
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AssetUpdate(ctx context.Context, params *atomic.AssetUpdateInput) (*atomic.Asset, error) {
-	var resp ResponseProxy[atomic.Asset]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AssetUpdate(ctx context.Context, params *AssetUpdateInput) (*Asset, error) {
+	var resp ResponseProxy[Asset]
 
 	path := fmt.Sprintf(AssetUpdatePath, params.AssetID.String())
 
@@ -127,11 +124,7 @@ func (c *Client) AssetUpdate(ctx context.Context, params *atomic.AssetUpdateInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AssetDelete(ctx context.Context, params *atomic.AssetDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) AssetDelete(ctx context.Context, params *AssetDeleteInput) error {
 	path := fmt.Sprintf(AssetDeletePath, params.AssetID.String())
 
 	return c.Backend.ExecContext(
@@ -141,8 +134,8 @@ func (c *Client) AssetDelete(ctx context.Context, params *atomic.AssetDeleteInpu
 	)
 }
 
-func (c *Client) AssetList(ctx context.Context, params *atomic.AssetListInput) ([]*atomic.Asset, error) {
-	var resp ResponseProxy[[]*atomic.Asset]
+func (c *Client) AssetList(ctx context.Context, params *AssetListInput) ([]*Asset, error) {
+	var resp ResponseProxy[[]*Asset]
 
 	if err := c.Backend.ExecContext(
 		ctx,

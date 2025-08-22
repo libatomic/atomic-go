@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Subscription            = atomic.Subscription
+	SubscriptionGetInput    = atomic.SubscriptionGetInput
+	SubscriptionListInput   = atomic.SubscriptionListInput
+	SubscriptionCreateInput = atomic.SubscriptionCreateInput
+	SubscriptionUpdateInput = atomic.SubscriptionUpdateInput
+	SubscriptionDeleteInput = atomic.SubscriptionDeleteInput
+)
+
 const (
 	SubscriptionGetPath    = "/api/1.0.0/subscriptions/%s"
 	SubscriptionListPath   = "/api/1.0.0/subscriptions"
@@ -32,12 +41,8 @@ const (
 	SubscriptionDeletePath = "/api/1.0.0/subscriptions/%s"
 )
 
-func (c *Client) SubscriptionGet(ctx context.Context, params *atomic.SubscriptionGetInput) (*atomic.Subscription, error) {
-	var resp ResponseProxy[atomic.Subscription]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) SubscriptionGet(ctx context.Context, params *SubscriptionGetInput) (*Subscription, error) {
+	var resp ResponseProxy[Subscription]
 
 	path := fmt.Sprintf(SubscriptionGetPath, params.SubscriptionID.String())
 
@@ -51,12 +56,8 @@ func (c *Client) SubscriptionGet(ctx context.Context, params *atomic.Subscriptio
 	return resp.Pointer(), nil
 }
 
-func (c *Client) SubscriptionList(ctx context.Context, params *atomic.SubscriptionListInput) ([]*atomic.Subscription, error) {
-	var resp ResponseProxy[[]*atomic.Subscription]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) SubscriptionList(ctx context.Context, params *SubscriptionListInput) ([]*Subscription, error) {
+	var resp ResponseProxy[[]*Subscription]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -68,12 +69,8 @@ func (c *Client) SubscriptionList(ctx context.Context, params *atomic.Subscripti
 	return resp.Value(), nil
 }
 
-func (c *Client) SubscriptionCreate(ctx context.Context, params *atomic.SubscriptionCreateInput) (*atomic.Subscription, error) {
-	var resp ResponseProxy[atomic.Subscription]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) SubscriptionCreate(ctx context.Context, params *SubscriptionCreateInput) (*Subscription, error) {
+	var resp ResponseProxy[Subscription]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,12 +82,8 @@ func (c *Client) SubscriptionCreate(ctx context.Context, params *atomic.Subscrip
 	return resp.Pointer(), nil
 }
 
-func (c *Client) SubscriptionUpdate(ctx context.Context, params *atomic.SubscriptionUpdateInput) (*atomic.Subscription, error) {
-	var resp ResponseProxy[atomic.Subscription]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) SubscriptionUpdate(ctx context.Context, params *SubscriptionUpdateInput) (*Subscription, error) {
+	var resp ResponseProxy[Subscription]
 
 	path := fmt.Sprintf(SubscriptionUpdatePath, params.SubscriptionID.String())
 
@@ -104,11 +97,7 @@ func (c *Client) SubscriptionUpdate(ctx context.Context, params *atomic.Subscrip
 	return resp.Pointer(), nil
 }
 
-func (c *Client) SubscriptionDelete(ctx context.Context, params *atomic.SubscriptionDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) SubscriptionDelete(ctx context.Context, params *SubscriptionDeleteInput) error {
 	path := fmt.Sprintf(SubscriptionDeletePath, params.SubscriptionID.String())
 
 	if err := c.Backend.ExecContext(

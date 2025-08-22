@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Template            = atomic.Template
+	TemplateGetInput    = atomic.TemplateGetInput
+	TemplateListInput   = atomic.TemplateListInput
+	TemplateCreateInput = atomic.TemplateCreateInput
+	TemplateUpdateInput = atomic.TemplateUpdateInput
+	TemplateDeleteInput = atomic.TemplateDeleteInput
+)
+
 const (
 	TemplateGetPath    = "/api/1.0.0/templates/%s"
 	TemplateListPath   = "/api/1.0.0/templates"
@@ -32,12 +41,8 @@ const (
 	TemplateDeletePath = "/api/1.0.0/templates/%s"
 )
 
-func (c *Client) TemplateGet(ctx context.Context, params *atomic.TemplateGetInput) (*atomic.Template, error) {
-	var resp ResponseProxy[atomic.Template]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) TemplateGet(ctx context.Context, params *TemplateGetInput) (*Template, error) {
+	var resp ResponseProxy[Template]
 
 	path := fmt.Sprintf(TemplateGetPath, params.TemplateID.String())
 
@@ -51,12 +56,8 @@ func (c *Client) TemplateGet(ctx context.Context, params *atomic.TemplateGetInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) TemplateList(ctx context.Context, params *atomic.TemplateListInput) ([]*atomic.Template, error) {
-	var resp ResponseProxy[[]*atomic.Template]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) TemplateList(ctx context.Context, params *TemplateListInput) ([]*Template, error) {
+	var resp ResponseProxy[[]*Template]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -68,12 +69,8 @@ func (c *Client) TemplateList(ctx context.Context, params *atomic.TemplateListIn
 	return resp.Value(), nil
 }
 
-func (c *Client) TemplateCreate(ctx context.Context, params *atomic.TemplateCreateInput) (*atomic.Template, error) {
-	var resp ResponseProxy[atomic.Template]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) TemplateCreate(ctx context.Context, params *TemplateCreateInput) (*Template, error) {
+	var resp ResponseProxy[Template]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,12 +82,8 @@ func (c *Client) TemplateCreate(ctx context.Context, params *atomic.TemplateCrea
 	return resp.Pointer(), nil
 }
 
-func (c *Client) TemplateUpdate(ctx context.Context, params *atomic.TemplateUpdateInput) (*atomic.Template, error) {
-	var resp ResponseProxy[atomic.Template]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) TemplateUpdate(ctx context.Context, params *TemplateUpdateInput) (*Template, error) {
+	var resp ResponseProxy[Template]
 
 	path := fmt.Sprintf(TemplateUpdatePath, params.TemplateID.String())
 
@@ -104,11 +97,7 @@ func (c *Client) TemplateUpdate(ctx context.Context, params *atomic.TemplateUpda
 	return resp.Pointer(), nil
 }
 
-func (c *Client) TemplateDelete(ctx context.Context, params *atomic.TemplateDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) TemplateDelete(ctx context.Context, params *TemplateDeleteInput) error {
 	path := fmt.Sprintf(TemplateDeletePath, params.TemplateID.String())
 
 	if err := c.Backend.ExecContext(

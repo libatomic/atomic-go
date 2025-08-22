@@ -24,6 +24,16 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Plan               = atomic.Plan
+	PlanCreateInput    = atomic.PlanCreateInput
+	PlanGetInput       = atomic.PlanGetInput
+	PlanUpdateInput    = atomic.PlanUpdateInput
+	PlanDeleteInput    = atomic.PlanDeleteInput
+	PlanListInput      = atomic.PlanListInput
+	PlanSubscribeInput = atomic.PlanSubscribeInput
+)
+
 const (
 	PlanGetPath       = "/api/1.0.0/plans/%s"
 	PlanCreatePath    = "/api/1.0.0/plans"
@@ -33,12 +43,8 @@ const (
 	PlanSubscribePath = "/api/1.0.0/plans/%s/subscribe"
 )
 
-func (c *Client) PlanGet(ctx context.Context, params *atomic.PlanGetInput) (*atomic.Plan, error) {
-	var resp ResponseProxy[atomic.Plan]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PlanGet(ctx context.Context, params *PlanGetInput) (*Plan, error) {
+	var resp ResponseProxy[Plan]
 
 	path := fmt.Sprintf(PlanGetPath, params.PlanID.String())
 
@@ -52,12 +58,8 @@ func (c *Client) PlanGet(ctx context.Context, params *atomic.PlanGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PlanCreate(ctx context.Context, params *atomic.PlanCreateInput) (*atomic.Plan, error) {
-	var resp ResponseProxy[atomic.Plan]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PlanCreate(ctx context.Context, params *PlanCreateInput) (*Plan, error) {
+	var resp ResponseProxy[Plan]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -69,12 +71,8 @@ func (c *Client) PlanCreate(ctx context.Context, params *atomic.PlanCreateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PlanUpdate(ctx context.Context, params *atomic.PlanUpdateInput) (*atomic.Plan, error) {
-	var resp ResponseProxy[atomic.Plan]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PlanUpdate(ctx context.Context, params *PlanUpdateInput) (*Plan, error) {
+	var resp ResponseProxy[Plan]
 
 	path := fmt.Sprintf(PlanUpdatePath, params.PlanID.String())
 
@@ -88,11 +86,7 @@ func (c *Client) PlanUpdate(ctx context.Context, params *atomic.PlanUpdateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PlanDelete(ctx context.Context, params *atomic.PlanDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) PlanDelete(ctx context.Context, params *PlanDeleteInput) error {
 	path := fmt.Sprintf(PlanDeletePath, params.PlanID.String())
 
 	if err := c.Backend.ExecContext(
@@ -106,12 +100,8 @@ func (c *Client) PlanDelete(ctx context.Context, params *atomic.PlanDeleteInput)
 	return nil
 }
 
-func (c *Client) PlanList(ctx context.Context, params *atomic.PlanListInput) ([]*atomic.Plan, error) {
-	var resp ResponseProxy[[]*atomic.Plan]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PlanList(ctx context.Context, params *PlanListInput) ([]*Plan, error) {
+	var resp ResponseProxy[[]*Plan]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -123,12 +113,8 @@ func (c *Client) PlanList(ctx context.Context, params *atomic.PlanListInput) ([]
 	return resp.Value(), nil
 }
 
-func (c *Client) PlanSubscribe(ctx context.Context, params *atomic.PlanSubscribeInput) (*atomic.Subscription, error) {
-	var resp ResponseProxy[atomic.Subscription]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PlanSubscribe(ctx context.Context, params *PlanSubscribeInput) (*Subscription, error) {
+	var resp ResponseProxy[Subscription]
 
 	path := fmt.Sprintf(PlanSubscribePath, params.PlanID.String())
 

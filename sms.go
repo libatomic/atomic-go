@@ -30,10 +30,6 @@ const (
 func (c *Client) SendSMS(ctx context.Context, params *atomic.SendSMSInput) ([]*atomic.SMS, error) {
 	var resp ResponseProxy[[]*atomic.SMS]
 
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
 	if err := c.Backend.ExecContext(
 		ctx,
 		NewRequest(ctx, SMSSendPath, params).Post(),

@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Audience            = atomic.Audience
+	AudienceCreateInput = atomic.AudienceCreateInput
+	AudienceGetInput    = atomic.AudienceGetInput
+	AudienceUpdateInput = atomic.AudienceUpdateInput
+	AudienceDeleteInput = atomic.AudienceDeleteInput
+	AudienceListInput   = atomic.AudienceListInput
+)
+
 const (
 	AudienceGetPath    = "/api/1.0.0/audiences/%s"
 	AudienceCreatePath = "/api/1.0.0/audiences"
@@ -32,12 +41,8 @@ const (
 	AudienceListPath   = "/api/1.0.0/audiences"
 )
 
-func (c *Client) AudienceGet(ctx context.Context, params *atomic.AudienceGetInput) (*atomic.Audience, error) {
-	var resp ResponseProxy[atomic.Audience]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AudienceGet(ctx context.Context, params *AudienceGetInput) (*Audience, error) {
+	var resp ResponseProxy[Audience]
 
 	path := fmt.Sprintf(AudienceGetPath, params.AudienceID.String())
 
@@ -51,12 +56,8 @@ func (c *Client) AudienceGet(ctx context.Context, params *atomic.AudienceGetInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AudienceCreate(ctx context.Context, params *atomic.AudienceCreateInput) (*atomic.Audience, error) {
-	var resp ResponseProxy[atomic.Audience]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AudienceCreate(ctx context.Context, params *AudienceCreateInput) (*Audience, error) {
+	var resp ResponseProxy[Audience]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -68,12 +69,8 @@ func (c *Client) AudienceCreate(ctx context.Context, params *atomic.AudienceCrea
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AudienceUpdate(ctx context.Context, params *atomic.AudienceUpdateInput) (*atomic.Audience, error) {
-	var resp ResponseProxy[atomic.Audience]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AudienceUpdate(ctx context.Context, params *AudienceUpdateInput) (*Audience, error) {
+	var resp ResponseProxy[Audience]
 
 	path := fmt.Sprintf(AudienceUpdatePath, params.AudienceID.String())
 
@@ -87,11 +84,7 @@ func (c *Client) AudienceUpdate(ctx context.Context, params *atomic.AudienceUpda
 	return resp.Pointer(), nil
 }
 
-func (c *Client) AudienceDelete(ctx context.Context, params *atomic.AudienceDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) AudienceDelete(ctx context.Context, params *AudienceDeleteInput) error {
 	path := fmt.Sprintf(AudienceDeletePath, params.AudienceID.String())
 
 	if err := c.Backend.ExecContext(
@@ -105,12 +98,8 @@ func (c *Client) AudienceDelete(ctx context.Context, params *atomic.AudienceDele
 	return nil
 }
 
-func (c *Client) AudienceList(ctx context.Context, params *atomic.AudienceListInput) ([]*atomic.Audience, error) {
-	var resp ResponseProxy[[]*atomic.Audience]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) AudienceList(ctx context.Context, params *AudienceListInput) ([]*Audience, error) {
+	var resp ResponseProxy[[]*Audience]
 
 	if err := c.Backend.ExecContext(
 		ctx,

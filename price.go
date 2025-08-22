@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Price            = atomic.Price
+	PriceGetInput    = atomic.PriceGetInput
+	PriceCreateInput = atomic.PriceCreateInput
+	PriceUpdateInput = atomic.PriceUpdateInput
+	PriceDeleteInput = atomic.PriceDeleteInput
+	PriceListInput   = atomic.PriceListInput
+)
+
 const (
 	PriceGetPath    = "/api/1.0.0/prices/%s"
 	PriceCreatePath = "/api/1.0.0/prices"
@@ -32,12 +41,8 @@ const (
 	PriceListPath   = "/api/1.0.0/prices"
 )
 
-func (c *Client) PriceGet(ctx context.Context, params *atomic.PriceGetInput) (*atomic.Price, error) {
-	var resp ResponseProxy[atomic.Price]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PriceGet(ctx context.Context, params *PriceGetInput) (*Price, error) {
+	var resp ResponseProxy[Price]
 
 	path := fmt.Sprintf(PriceGetPath, params.PriceID.String())
 
@@ -51,12 +56,8 @@ func (c *Client) PriceGet(ctx context.Context, params *atomic.PriceGetInput) (*a
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PriceCreate(ctx context.Context, params *atomic.PriceCreateInput) (*atomic.Price, error) {
-	var resp ResponseProxy[atomic.Price]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PriceCreate(ctx context.Context, params *PriceCreateInput) (*Price, error) {
+	var resp ResponseProxy[Price]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -68,12 +69,8 @@ func (c *Client) PriceCreate(ctx context.Context, params *atomic.PriceCreateInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PriceUpdate(ctx context.Context, params *atomic.PriceUpdateInput) (*atomic.Price, error) {
-	var resp ResponseProxy[atomic.Price]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PriceUpdate(ctx context.Context, params *PriceUpdateInput) (*Price, error) {
+	var resp ResponseProxy[Price]
 
 	path := fmt.Sprintf(PriceUpdatePath, params.PriceID.String())
 
@@ -87,11 +84,7 @@ func (c *Client) PriceUpdate(ctx context.Context, params *atomic.PriceUpdateInpu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PriceDelete(ctx context.Context, params *atomic.PriceDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) PriceDelete(ctx context.Context, params *PriceDeleteInput) error {
 	path := fmt.Sprintf(PriceDeletePath, params.PriceID.String())
 
 	if err := c.Backend.ExecContext(
@@ -105,8 +98,8 @@ func (c *Client) PriceDelete(ctx context.Context, params *atomic.PriceDeleteInpu
 	return nil
 }
 
-func (c *Client) PriceList(ctx context.Context, params *atomic.PriceListInput) ([]*atomic.Price, error) {
-	var resp ResponseProxy[[]*atomic.Price]
+func (c *Client) PriceList(ctx context.Context, params *PriceListInput) ([]*Price, error) {
+	var resp ResponseProxy[[]*Price]
 
 	if err := params.Validate(); err != nil {
 		return nil, err

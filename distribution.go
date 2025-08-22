@@ -24,6 +24,15 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Distribution            = atomic.Distribution
+	DistributionCreateInput = atomic.DistributionCreateInput
+	DistributionGetInput    = atomic.DistributionGetInput
+	DistributionUpdateInput = atomic.DistributionUpdateInput
+	DistributionDeleteInput = atomic.DistributionDeleteInput
+	DistributionListInput   = atomic.DistributionListInput
+)
+
 const (
 	DistributionGetPath    = "/api/1.0.0/distributions/%s"
 	DistributionCreatePath = "/api/1.0.0/distributions"
@@ -32,12 +41,8 @@ const (
 	DistributionListPath   = "/api/1.0.0/distributions"
 )
 
-func (c *Client) DistributionGet(ctx context.Context, params *atomic.DistributionGetInput) (*atomic.Distribution, error) {
-	var resp ResponseProxy[atomic.Distribution]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) DistributionGet(ctx context.Context, params *DistributionGetInput) (*Distribution, error) {
+	var resp ResponseProxy[Distribution]
 
 	path := fmt.Sprintf(DistributionGetPath, params.DistributionID.String())
 
@@ -51,12 +56,8 @@ func (c *Client) DistributionGet(ctx context.Context, params *atomic.Distributio
 	return resp.Pointer(), nil
 }
 
-func (c *Client) DistributionCreate(ctx context.Context, params *atomic.DistributionCreateInput) (*atomic.Distribution, error) {
-	var resp ResponseProxy[atomic.Distribution]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) DistributionCreate(ctx context.Context, params *DistributionCreateInput) (*Distribution, error) {
+	var resp ResponseProxy[Distribution]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -68,12 +69,8 @@ func (c *Client) DistributionCreate(ctx context.Context, params *atomic.Distribu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) DistributionUpdate(ctx context.Context, params *atomic.DistributionUpdateInput) (*atomic.Distribution, error) {
-	var resp ResponseProxy[atomic.Distribution]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) DistributionUpdate(ctx context.Context, params *DistributionUpdateInput) (*Distribution, error) {
+	var resp ResponseProxy[Distribution]
 
 	path := fmt.Sprintf(DistributionUpdatePath, params.DistributionID.String())
 
@@ -87,11 +84,7 @@ func (c *Client) DistributionUpdate(ctx context.Context, params *atomic.Distribu
 	return resp.Pointer(), nil
 }
 
-func (c *Client) DistributionDelete(ctx context.Context, params *atomic.DistributionDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) DistributionDelete(ctx context.Context, params *DistributionDeleteInput) error {
 	path := fmt.Sprintf(DistributionDeletePath, params.DistributionID.String())
 
 	if err := c.Backend.ExecContext(
@@ -105,12 +98,8 @@ func (c *Client) DistributionDelete(ctx context.Context, params *atomic.Distribu
 	return nil
 }
 
-func (c *Client) DistributionList(ctx context.Context, params *atomic.DistributionListInput) ([]*atomic.Distribution, error) {
-	var resp ResponseProxy[[]*atomic.Distribution]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) DistributionList(ctx context.Context, params *DistributionListInput) ([]*Distribution, error) {
+	var resp ResponseProxy[[]*Distribution]
 
 	if err := c.Backend.ExecContext(
 		ctx,

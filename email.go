@@ -24,16 +24,17 @@ import (
 	"github.com/libatomic/atomic/pkg/email"
 )
 
+type (
+	EmailMessage  = email.Message
+	SendMailInput = atomic.SendMailInput
+)
+
 const (
 	SendMailPath = "/api/1.0.0/mail"
 )
 
-func (c *Client) SendMail(ctx context.Context, params *atomic.SendMailInput) ([]*email.Message, error) {
-	var resp ResponseProxy[[]*email.Message]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) SendMail(ctx context.Context, params *SendMailInput) ([]*EmailMessage, error) {
+	var resp ResponseProxy[[]*EmailMessage]
 
 	if err := c.Backend.ExecContext(
 		ctx,

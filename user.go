@@ -30,6 +30,16 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	User            = atomic.User
+	UserGetInput    = atomic.UserGetInput
+	UserCreateInput = atomic.UserCreateInput
+	UserUpdateInput = atomic.UserUpdateInput
+	UserDeleteInput = atomic.UserDeleteInput
+	UserListInput   = atomic.UserListInput
+	UserImportInput = atomic.UserImportInput
+)
+
 const (
 	UserGetPath    = "/api/1.0.0/users/%s"
 	UserCreatePath = "/api/1.0.0/users"
@@ -39,12 +49,8 @@ const (
 	UserImportPath = "/api/1.0.0/users/import"
 )
 
-func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) UserGet(ctx context.Context, params *UserGetInput) (*User, error) {
+	var resp ResponseProxy[User]
 
 	path := fmt.Sprintf(UserGetPath, params.UserID.String())
 
@@ -58,12 +64,8 @@ func (c *Client) UserGet(ctx context.Context, params *atomic.UserGetInput) (*ato
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) UserCreate(ctx context.Context, params *UserCreateInput) (*User, error) {
+	var resp ResponseProxy[User]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -75,12 +77,8 @@ func (c *Client) UserCreate(ctx context.Context, params *atomic.UserCreateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput) (*atomic.User, error) {
-	var resp ResponseProxy[atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) UserUpdate(ctx context.Context, params *UserUpdateInput) (*User, error) {
+	var resp ResponseProxy[User]
 
 	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
 
@@ -94,11 +92,7 @@ func (c *Client) UserUpdate(ctx context.Context, params *atomic.UserUpdateInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) UserDelete(ctx context.Context, params *UserDeleteInput) error {
 	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
 
 	return c.Backend.ExecContext(
@@ -108,12 +102,8 @@ func (c *Client) UserDelete(ctx context.Context, params *atomic.UserDeleteInput)
 	)
 }
 
-func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]*atomic.User, error) {
-	var resp ResponseProxy[[]*atomic.User]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) UserList(ctx context.Context, params *UserListInput) ([]*User, error) {
+	var resp ResponseProxy[[]*User]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -125,12 +115,8 @@ func (c *Client) UserList(ctx context.Context, params *atomic.UserListInput) ([]
 	return resp.Value(), nil
 }
 
-func (c *Client) UserImport(ctx context.Context, params *atomic.UserImportInput) (*atomic.Job, error) {
-	var resp ResponseProxy[atomic.Job]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) UserImport(ctx context.Context, params *UserImportInput) (*Job, error) {
+	var resp ResponseProxy[Job]
 
 	if params.File == nil {
 		return nil, errors.New("file is required")

@@ -24,6 +24,23 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Partner                      = atomic.Partner
+	PartnerCredential            = atomic.PartnerCredential
+	PartnerAccessToken           = atomic.PartnerAccessToken
+	PartnerCreateInput           = atomic.PartnerCreateInput
+	PartnerGetInput              = atomic.PartnerGetInput
+	PartnerUpdateInput           = atomic.PartnerUpdateInput
+	PartnerDeleteInput           = atomic.PartnerDeleteInput
+	PartnerListInput             = atomic.PartnerListInput
+	PartnerCredentialCreateInput = atomic.PartnerCredentialCreateInput
+	PartnerCredentialGetInput    = atomic.PartnerCredentialGetInput
+	PartnerCredentialDeleteInput = atomic.PartnerCredentialDeleteInput
+	PartnerTokenCreateInput      = atomic.PartnerTokenCreateInput
+	PartnerTokenGetInput         = atomic.PartnerTokenGetInput
+	PartnerTokenRevokeInput      = atomic.PartnerTokenRevokeInput
+)
+
 const (
 	PartnerGetPath              = "/api/1.0.0/partners/%s"
 	PartnerCreatePath           = "/api/1.0.0/partners"
@@ -38,12 +55,8 @@ const (
 	PartnerTokenRevokePath      = "/api/1.0.0/partners/%s/tokens/%s"
 )
 
-func (c *Client) PartnerGet(ctx context.Context, params *atomic.PartnerGetInput) (*atomic.Partner, error) {
-	var resp ResponseProxy[atomic.Partner]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerGet(ctx context.Context, params *PartnerGetInput) (*Partner, error) {
+	var resp ResponseProxy[Partner]
 
 	path := fmt.Sprintf(PartnerGetPath, params.PartnerID.String())
 
@@ -57,18 +70,12 @@ func (c *Client) PartnerGet(ctx context.Context, params *atomic.PartnerGetInput)
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerCreate(ctx context.Context, params *atomic.PartnerCreateInput) (*atomic.Partner, error) {
-	var resp ResponseProxy[atomic.Partner]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
-
-	path := fmt.Sprintf(PartnerCreatePath)
+func (c *Client) PartnerCreate(ctx context.Context, params *PartnerCreateInput) (*Partner, error) {
+	var resp ResponseProxy[Partner]
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Post(),
+		NewRequest(ctx, PartnerCreatePath, params).Post(),
 		&resp); err != nil {
 		return nil, err
 	}
@@ -76,12 +83,8 @@ func (c *Client) PartnerCreate(ctx context.Context, params *atomic.PartnerCreate
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerUpdate(ctx context.Context, params *atomic.PartnerUpdateInput) (*atomic.Partner, error) {
-	var resp ResponseProxy[atomic.Partner]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerUpdate(ctx context.Context, params *PartnerUpdateInput) (*Partner, error) {
+	var resp ResponseProxy[Partner]
 
 	path := fmt.Sprintf(PartnerUpdatePath, params.PartnerID.String())
 
@@ -95,11 +98,7 @@ func (c *Client) PartnerUpdate(ctx context.Context, params *atomic.PartnerUpdate
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerDelete(ctx context.Context, params *atomic.PartnerDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) PartnerDelete(ctx context.Context, params *PartnerDeleteInput) error {
 	path := fmt.Sprintf(PartnerDeletePath, params.PartnerID.String())
 
 	if err := c.Backend.ExecContext(
@@ -112,8 +111,8 @@ func (c *Client) PartnerDelete(ctx context.Context, params *atomic.PartnerDelete
 	return nil
 }
 
-func (c *Client) PartnerList(ctx context.Context, params *atomic.PartnerListInput) ([]*atomic.Partner, error) {
-	var resp ResponseProxy[[]*atomic.Partner]
+func (c *Client) PartnerList(ctx context.Context, params *PartnerListInput) ([]*Partner, error) {
+	var resp ResponseProxy[[]*Partner]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -125,12 +124,8 @@ func (c *Client) PartnerList(ctx context.Context, params *atomic.PartnerListInpu
 	return resp.Value(), nil
 }
 
-func (c *Client) PartnerCredentialCreate(ctx context.Context, params *atomic.PartnerCredentialCreateInput) (*atomic.PartnerCredential, error) {
-	var resp ResponseProxy[atomic.PartnerCredential]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerCredentialCreate(ctx context.Context, params *PartnerCredentialCreateInput) (*PartnerCredential, error) {
+	var resp ResponseProxy[PartnerCredential]
 
 	path := fmt.Sprintf(PartnerCredentialCreatePath, params.PartnerID.String())
 
@@ -144,12 +139,8 @@ func (c *Client) PartnerCredentialCreate(ctx context.Context, params *atomic.Par
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerCredentialGet(ctx context.Context, params *atomic.PartnerCredentialGetInput) (*atomic.PartnerCredential, error) {
-	var resp ResponseProxy[atomic.PartnerCredential]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerCredentialGet(ctx context.Context, params *PartnerCredentialGetInput) (*PartnerCredential, error) {
+	var resp ResponseProxy[PartnerCredential]
 
 	path := fmt.Sprintf(PartnerCredentialGetPath, params.PartnerID.String(), *params.ClientID)
 
@@ -163,11 +154,7 @@ func (c *Client) PartnerCredentialGet(ctx context.Context, params *atomic.Partne
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerCredentialDelete(ctx context.Context, params *atomic.PartnerCredentialDeleteInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) PartnerCredentialDelete(ctx context.Context, params *PartnerCredentialDeleteInput) error {
 	path := fmt.Sprintf(PartnerCredentialDeletePath, params.PartnerID.String(), *params.ClientID)
 
 	if err := c.Backend.ExecContext(
@@ -180,12 +167,8 @@ func (c *Client) PartnerCredentialDelete(ctx context.Context, params *atomic.Par
 	return nil
 }
 
-func (c *Client) PartnerTokenCreate(ctx context.Context, params *atomic.PartnerTokenCreateInput) (*atomic.PartnerAccessToken, error) {
-	var resp ResponseProxy[atomic.PartnerAccessToken]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerTokenCreate(ctx context.Context, params *PartnerTokenCreateInput) (*PartnerAccessToken, error) {
+	var resp ResponseProxy[PartnerAccessToken]
 
 	path := fmt.Sprintf(PartnerTokenCreatePath, params.PartnerID.String())
 
@@ -199,12 +182,8 @@ func (c *Client) PartnerTokenCreate(ctx context.Context, params *atomic.PartnerT
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerTokenGet(ctx context.Context, params *atomic.PartnerTokenGetInput) (*atomic.PartnerAccessToken, error) {
-	var resp ResponseProxy[atomic.PartnerAccessToken]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) PartnerTokenGet(ctx context.Context, params *PartnerTokenGetInput) (*PartnerAccessToken, error) {
+	var resp ResponseProxy[PartnerAccessToken]
 
 	path := fmt.Sprintf(PartnerTokenGetPath, params.PartnerID.String(), params.TokenID.String())
 
@@ -218,11 +197,7 @@ func (c *Client) PartnerTokenGet(ctx context.Context, params *atomic.PartnerToke
 	return resp.Pointer(), nil
 }
 
-func (c *Client) PartnerTokenRevoke(ctx context.Context, params *atomic.PartnerTokenRevokeInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) PartnerTokenRevoke(ctx context.Context, params *PartnerTokenRevokeInput) error {
 	path := fmt.Sprintf(PartnerTokenRevokePath, params.PartnerID.String(), params.TokenID.String())
 
 	if err := c.Backend.ExecContext(

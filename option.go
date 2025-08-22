@@ -24,6 +24,14 @@ import (
 	"github.com/libatomic/atomic/pkg/atomic"
 )
 
+type (
+	Option            = atomic.Option
+	OptionGetInput    = atomic.OptionGetInput
+	OptionListInput   = atomic.OptionListInput
+	OptionUpdateInput = atomic.OptionUpdateInput
+	OptionRemoveInput = atomic.OptionRemoveInput
+)
+
 const (
 	OptionGetPath    = "/api/1.0.0/options/%s"
 	OptionListPath   = "/api/1.0.0/options"
@@ -31,12 +39,8 @@ const (
 	OptionRemovePath = "/api/1.0.0/options/%s"
 )
 
-func (c *Client) OptionGet(ctx context.Context, params *atomic.OptionGetInput) (*atomic.Option, error) {
-	var resp ResponseProxy[atomic.Option]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) OptionGet(ctx context.Context, params *OptionGetInput) (*Option, error) {
+	var resp ResponseProxy[Option]
 
 	path := fmt.Sprintf(OptionGetPath, params.Name)
 
@@ -50,12 +54,8 @@ func (c *Client) OptionGet(ctx context.Context, params *atomic.OptionGetInput) (
 	return resp.Pointer(), nil
 }
 
-func (c *Client) OptionList(ctx context.Context, params *atomic.OptionListInput) ([]*atomic.Option, error) {
-	var resp ResponseProxy[[]*atomic.Option]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) OptionList(ctx context.Context, params *OptionListInput) ([]*Option, error) {
+	var resp ResponseProxy[[]*Option]
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -67,12 +67,8 @@ func (c *Client) OptionList(ctx context.Context, params *atomic.OptionListInput)
 	return resp.Value(), nil
 }
 
-func (c *Client) OptionUpdate(ctx context.Context, params *atomic.OptionUpdateInput) (*atomic.Option, error) {
-	var resp ResponseProxy[atomic.Option]
-
-	if err := params.Validate(); err != nil {
-		return nil, err
-	}
+func (c *Client) OptionUpdate(ctx context.Context, params *OptionUpdateInput) (*Option, error) {
+	var resp ResponseProxy[Option]
 
 	path := fmt.Sprintf(OptionUpdatePath, params.Name)
 
@@ -86,11 +82,7 @@ func (c *Client) OptionUpdate(ctx context.Context, params *atomic.OptionUpdateIn
 	return resp.Pointer(), nil
 }
 
-func (c *Client) OptionRemove(ctx context.Context, params *atomic.OptionRemoveInput) error {
-	if err := params.Validate(); err != nil {
-		return err
-	}
-
+func (c *Client) OptionRemove(ctx context.Context, params *OptionRemoveInput) error {
 	path := fmt.Sprintf(OptionRemovePath, params.Name)
 
 	if err := c.Backend.ExecContext(
