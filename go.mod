@@ -55,6 +55,7 @@ require (
 	github.com/davidscholberg/go-durationfmt v0.0.0-20170122144659-64843a2083d3 // indirect
 	github.com/dgrijalva/jwt-go v3.2.1-0.20200107013213-dc14462fd587+incompatible // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/expr-lang/expr v1.17.6 // indirect
 	github.com/fanatic/instrumentedsql v0.0.0-20220630161905-0737c8d31b10 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-openapi/errors v0.20.0 // indirect
@@ -80,7 +81,9 @@ require (
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/jmoiron/sqlx v1.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
+	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kataras/blocks v0.0.6 // indirect
+	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
@@ -96,6 +99,8 @@ require (
 	github.com/mitchellh/hashstructure/v2 v2.0.2 // indirect
 	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
+	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
+	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/mr-tron/base58 v1.2.0 // indirect
 	github.com/nleeper/goment v1.4.5-0.20221117170701-54447c7bdcf9 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
@@ -122,9 +127,6 @@ require (
 	github.com/tcolgate/mp3 v0.0.0-20170426193717-e79c5a46d300 // indirect
 	github.com/thanhpk/randstr v1.0.4 // indirect
 	github.com/thoas/go-funk v0.7.0 // indirect
-	github.com/tidwall/gjson v1.14.3 // indirect
-	github.com/tidwall/match v1.1.1 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/tkuchiki/go-timezone v0.2.0 // indirect
 	github.com/toorop/go-dkim v0.0.0-20250226130143-9025cce95817 // indirect
 	github.com/trubitsyn/go-zero-width v1.0.1 // indirect
