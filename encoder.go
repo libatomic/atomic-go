@@ -17,8 +17,6 @@
 
 package atomic
 
-import "github.com/gorilla/schema"
-
 var (
-	encoder = schema.NewEncoder()
+// encoder = schema.NewEncoder()
 )

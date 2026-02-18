@@ -30,12 +30,14 @@ type (
 	AccessTokenCreateInput = atomic.AccessTokenCreateInput
 	AccessTokenGetInput    = atomic.AccessTokenGetInput
 	AccessTokenRevokeInput = atomic.AccessTokenRevokeInput
+	AccessTokenUpdateInput = atomic.AccessTokenUpdateInput
 )
 
 const (
 	UserTokenCreatePath   = "/api/1.0.0/users/%s/tokens"
 	AppTokenCreatePath    = "/api/1.0.0/applications/%s/tokens"
 	AccessTokenGetPath    = "/api/1.0.0/tokens/%s"
+	AccessTokenUpdatePath = "/api/1.0.0/tokens/%s"
 	AccessTokenRevokePath = "/api/1.0.0/tokens/%s"
 	AccessTokenDeletePath = "/api/1.0.0/tokens/%s"
 )
@@ -74,6 +76,21 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *AccessTokenGetInput
 	if err := c.Backend.ExecContext(
 		ctx,
 		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) AccessTokenUpdate(ctx context.Context, params *AccessTokenUpdateInput) (*AccessToken, error) {
+	var resp ResponseProxy[AccessToken]
+
+	path := fmt.Sprintf(AccessTokenUpdatePath, params.AccessTokenID.String())
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Put(),
 		&resp); err != nil {
 		return nil, err
 	}
