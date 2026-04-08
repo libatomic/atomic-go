@@ -266,8 +266,9 @@ func (p *RequestProxy[T]) MarshalJSON() ([]byte, error) {
 
 // jsonToQuery marshals a struct to JSON, then builds a query string from the
 // resulting key/value pairs. Fields with json:"-" or omitempty zero values are
-// automatically excluded by json.Marshal. This is used for POST endpoints that
-// send parameters as query strings (e.g. multipart file uploads).
+// automatically excluded by json.Marshal. Zero values that survive marshaling
+// (fields without omitempty) are also skipped. This is used for POST endpoints
+// that send parameters as query strings (e.g. multipart file uploads).
 func jsonToQuery(v any) string {
 	data, err := json.Marshal(v)
 	if err != nil {
@@ -282,7 +283,24 @@ func jsonToQuery(v any) string {
 	vals := url.Values{}
 	for k, v := range m {
 		switch val := v.(type) {
+		case nil:
+			continue
+		case string:
+			if val == "" {
+				continue
+			}
+			vals.Set(k, val)
+		case float64:
+			if val == 0 {
+				continue
+			}
+			vals.Set(k, fmt.Sprint(val))
+		case bool:
+			vals.Set(k, fmt.Sprint(val))
 		case []any:
+			if len(val) == 0 {
+				continue
+			}
 			for _, item := range val {
 				vals.Add(k, fmt.Sprint(item))
 			}
