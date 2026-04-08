@@ -149,11 +149,17 @@ func (c *Client) UserImport(ctx context.Context, params *UserImportInput) (*Job,
 		return nil, fmt.Errorf("failed to close multipart writer: %w", err)
 	}
 
+	// Build query string from json tags since UserImportInput is a POST with
+	// multipart body; params go on the query string, not in the body.
+	path := UserImportPath
+	if qs := jsonToQuery(params); qs != "" {
+		path = path + "?" + qs
+	}
+
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, UserImportPath, params).Post().
+		NewRequest(ctx, path, params).Post().
 			WithContentType(writer.FormDataContentType()).
-			WithEncoding(ParamsEncodingQuery).
 			WithBody(&body),
 		&resp); err != nil {
 		return nil, err

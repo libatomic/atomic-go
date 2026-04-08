@@ -21,8 +21,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -260,4 +262,34 @@ func (p *RequestProxy[T]) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(methodMap)
+}
+
+// jsonToQuery marshals a struct to JSON, then builds a query string from the
+// resulting key/value pairs. Fields with json:"-" or omitempty zero values are
+// automatically excluded by json.Marshal. This is used for POST endpoints that
+// send parameters as query strings (e.g. multipart file uploads).
+func jsonToQuery(v any) string {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return ""
+	}
+
+	var m map[string]any
+	if err := json.Unmarshal(data, &m); err != nil {
+		return ""
+	}
+
+	vals := url.Values{}
+	for k, v := range m {
+		switch val := v.(type) {
+		case []any:
+			for _, item := range val {
+				vals.Add(k, fmt.Sprint(item))
+			}
+		default:
+			vals.Set(k, fmt.Sprint(val))
+		}
+	}
+
+	return vals.Encode()
 }
