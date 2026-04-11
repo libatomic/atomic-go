@@ -50,8 +50,19 @@ const (
 func (c *Client) AssetCreate(ctx context.Context, params *AssetCreateInput) (*Asset, error) {
 	var resp ResponseProxy[Asset]
 
+	// URL-based creation: send as JSON POST, server downloads the file
+	if params.URL != nil && *params.URL != "" {
+		if err := c.Backend.ExecContext(
+			ctx,
+			NewRequest(ctx, AssetCreatePath, params).Post(),
+			&resp); err != nil {
+			return nil, err
+		}
+		return resp.Pointer(), nil
+	}
+
 	if params.Payload == nil {
-		return nil, errors.New("payload is required")
+		return nil, errors.New("payload or url is required")
 	}
 
 	if params.Filename == "" {
