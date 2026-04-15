@@ -21,7 +21,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -112,16 +111,20 @@ func (b *ApiBackend) ExecContext(ctx context.Context, params RequestContainer, r
 	}
 
 	if resp.StatusCode >= 400 {
-		if len(body) > 0 {
-			var e Error
+		e := Error{Status: resp.Status}
 
-			if err := json.NewDecoder(bytes.NewReader(body)).Decode(&e); err != nil {
-				return err
+		if len(body) > 0 {
+			// try the standard {code,message} shape first; if it fails or yields
+			// nothing useful, fall through with the raw body captured so the
+			// caller still gets visible detail
+			if jerr := json.NewDecoder(bytes.NewReader(body)).Decode(&e); jerr != nil {
+				e.Raw = string(body)
+			} else if e.Message == "" && e.Code == "" {
+				e.Raw = string(body)
 			}
-			return e
 		}
 
-		return errors.New(resp.Status)
+		return e
 	}
 
 	if len(body) > 0 {
