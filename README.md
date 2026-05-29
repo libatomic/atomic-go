@@ -433,41 +433,6 @@ audiences, err := client.AudienceList(ctx, &atomic.AudienceListInput{
 })
 ```
 
-### Publishers
-
-Manage content publishers and channels.
-
-```go
-// Get a publisher
-publisher, err := client.PublisherGet(ctx, &atomic.PublisherGetInput{
-    PublisherID: atomic.String("publisher-id"),
-})
-
-// Create a publisher
-publisher, err := client.PublisherCreate(ctx, &atomic.PublisherCreateInput{
-    Name:        atomic.String("My Publisher"),
-    Description: atomic.String("My publishing channel"),
-    URL:         atomic.String("https://mypublisher.com"),
-})
-
-// Update a publisher
-publisher, err := client.PublisherUpdate(ctx, &atomic.PublisherUpdateInput{
-    PublisherID: atomic.String("publisher-id"),
-    Name:        atomic.String("Updated Publisher Name"),
-})
-
-// Delete a publisher
-err := client.PublisherDelete(ctx, &atomic.PublisherDeleteInput{
-    PublisherID: atomic.String("publisher-id"),
-})
-
-// List publishers
-publishers, err := client.PublisherList(ctx, &atomic.PublisherListInput{
-    Limit:  atomic.Int(10),
-    Offset: atomic.Int(0),
-})
-```
-
 ### Distributions
 
 Manage content distribution and syndication.
@@ -480,9 +445,9 @@ distribution, err := client.DistributionGet(ctx, &atomic.DistributionGetInput{
 
 // Create a distribution
 distribution, err := client.DistributionCreate(ctx, &atomic.DistributionCreateInput{
-    ArticleID:   atomic.String("article-id"),
-    PublisherID: atomic.String("publisher-id"),
-    Status:      atomic.String("scheduled"),
+    ArticleID:  atomic.String("article-id"),
+    AudienceID: atomic.String("audience-id"),
+    Channel:    atomic.Channel("email"),
 })
 
 // Update a distribution

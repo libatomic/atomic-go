@@ -37,7 +37,9 @@ type (
 	UserUpdateInput = atomic.UserUpdateInput
 	UserDeleteInput = atomic.UserDeleteInput
 	UserListInput   = atomic.UserListInput
-	UserImportInput = atomic.UserImportInput
+	UserImportInput  = atomic.UserImportInput
+	UserExportInput  = atomic.UserExportInput
+	UserExportSource = atomic.UserExportSource
 )
 
 const (
@@ -47,6 +49,7 @@ const (
 	UserDeletePath = "/api/1.0.0/users/%s"
 	UserListPath   = "/api/1.0.0/users"
 	UserImportPath = "/api/1.0.0/users/import"
+	UserExportPath = "/api/1.0.0/users/export"
 )
 
 func (c *Client) UserGet(ctx context.Context, params *UserGetInput) (*User, error) {
@@ -161,6 +164,19 @@ func (c *Client) UserImport(ctx context.Context, params *UserImportInput) (*Job,
 		NewRequest(ctx, path, params).Post().
 			WithContentType(writer.FormDataContentType()).
 			WithBody(&body),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) UserExport(ctx context.Context, params *UserExportInput) (*Job, error) {
+	var resp ResponseProxy[Job]
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, UserExportPath, params).Post(),
 		&resp); err != nil {
 		return nil, err
 	}
