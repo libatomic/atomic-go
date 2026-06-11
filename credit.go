@@ -25,18 +25,23 @@ import (
 )
 
 type (
-	Credit            = atomic.Credit
-	CreditCreateInput = atomic.CreditCreateInput
-	CreditGetInput    = atomic.CreditGetInput
-	CreditUpdateInput = atomic.CreditUpdateInput
-	CreditListInput   = atomic.CreditListInput
+	Credit                  = atomic.Credit
+	CreditInvite            = atomic.CreditInvite
+	CreditCreateInput       = atomic.CreditCreateInput
+	CreditGetInput          = atomic.CreditGetInput
+	CreditUpdateInput       = atomic.CreditUpdateInput
+	CreditListInput         = atomic.CreditListInput
+	CreditInviteCreateInput = atomic.CreditInviteCreateInput
+	CreditInviteAcceptInput = atomic.CreditInviteAcceptInput
 )
 
 const (
-	CreditGetPath    = "/api/1.0.0/credits/%s"
-	CreditUpdatePath = "/api/1.0.0/credits/%s"
-	CreditCreatePath = "/api/1.0.0/credits"
-	CreditListPath   = "/api/1.0.0/credits"
+	CreditGetPath          = "/api/1.0.0/credits/%s"
+	CreditUpdatePath       = "/api/1.0.0/credits/%s"
+	CreditCreatePath       = "/api/1.0.0/credits"
+	CreditListPath         = "/api/1.0.0/credits"
+	CreditInviteCreatePath = "/api/1.0.0/credits/invite"
+	CreditInviteAcceptPath = "/api/1.0.0/credits/invite/%s/accept"
 )
 
 func (c *Client) CreditGet(ctx context.Context, params *CreditGetInput) (*Credit, error) {
@@ -93,4 +98,30 @@ func (c *Client) CreditList(ctx context.Context, params *CreditListInput) ([]*Cr
 	}
 
 	return resp.Value(), nil
+}
+
+func (c *Client) CreditInviteCreate(ctx context.Context, params *CreditInviteCreateInput) (*CreditInvite, error) {
+	var resp ResponseProxy[CreditInvite]
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, CreditInviteCreatePath, params).Post(),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
+}
+
+func (c *Client) CreditInviteAccept(ctx context.Context, params *CreditInviteAcceptInput) (*Credit, *CreditInvite, error) {
+	path := fmt.Sprintf(CreditInviteAcceptPath, *params.InviteCode)
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Get(),
+		nil); err != nil {
+		return nil, nil, err
+	}
+
+	return nil, nil, nil
 }
