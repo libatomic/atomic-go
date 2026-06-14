@@ -5,7 +5,7 @@ go 1.25
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/google/go-querystring v1.1.0
-	github.com/libatomic/atomic v1.2.4-rc.14
+	github.com/libatomic/atomic v1.2.4
 	golang.org/x/oauth2 v0.30.0
 )
 
