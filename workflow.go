@@ -27,17 +27,20 @@ import (
 )
 
 type (
-	Workflow                = atomic.Workflow
-	WorkflowDefinition      = atomic.WorkflowDefinition
-	WorkflowCreateInput     = atomic.WorkflowCreateInput
-	WorkflowUpdateInput     = atomic.WorkflowUpdateInput
-	WorkflowGetInput        = atomic.WorkflowGetInput
-	WorkflowListInput       = atomic.WorkflowListInput
-	WorkflowDeleteInput     = atomic.WorkflowDeleteInput
-	WorkflowRunInput        = atomic.WorkflowRunInput
-	WorkflowRun             = atomic.WorkflowRun
-	WorkflowRunListInput    = atomic.WorkflowRunListInput
-	WorkflowRunGetInput     = atomic.WorkflowRunGetInput
+	Workflow                    = atomic.Workflow
+	WorkflowDefinition          = atomic.WorkflowDefinition
+	WorkflowVersion             = atomic.WorkflowVersion
+	WorkflowCreateInput         = atomic.WorkflowCreateInput
+	WorkflowUpdateInput         = atomic.WorkflowUpdateInput
+	WorkflowGetInput            = atomic.WorkflowGetInput
+	WorkflowListInput           = atomic.WorkflowListInput
+	WorkflowDeleteInput         = atomic.WorkflowDeleteInput
+	WorkflowRunInput            = atomic.WorkflowRunInput
+	WorkflowRun                 = atomic.WorkflowRun
+	WorkflowRunListInput        = atomic.WorkflowRunListInput
+	WorkflowRunGetInput         = atomic.WorkflowRunGetInput
+	WorkflowVersionListInput    = atomic.WorkflowVersionListInput
+	WorkflowVersionRevertInput  = atomic.WorkflowVersionRevertInput
 )
 
 const (
@@ -48,7 +51,9 @@ const (
 	WorkflowDeletePath = "/api/1.0.0/workflows/%s"
 	WorkflowRunPath    = "/api/1.0.0/workflows/%s/run"
 	WorkflowRunListPath = "/api/1.0.0/workflows/%s/runs"
-	WorkflowRunGetPath = "/api/1.0.0/workflows/%s/runs/%s"
+	WorkflowRunGetPath        = "/api/1.0.0/workflows/%s/runs/%s"
+	WorkflowVersionListPath   = "/api/1.0.0/workflows/%s/versions"
+	WorkflowVersionRevertPath = "/api/1.0.0/workflows/%s/versions/%d/revert"
 )
 
 func (c *Client) WorkflowList(ctx context.Context, params *WorkflowListInput) ([]*Workflow, error) {
@@ -200,6 +205,36 @@ func (c *Client) WorkflowCreateFromBytes(ctx context.Context, params *WorkflowCr
 func (c *Client) WorkflowUpdateFromBytes(ctx context.Context, params *WorkflowUpdateInput, data []byte) (*Workflow, error) {
 	ct := detectContentType(data)
 	return c.WorkflowUpdate(ctx, params, bytes.NewReader(data), ct)
+}
+
+func (c *Client) WorkflowVersionList(ctx context.Context, params *WorkflowVersionListInput) ([]*WorkflowVersion, error) {
+	var resp ResponseProxy[[]*WorkflowVersion]
+
+	path := fmt.Sprintf(WorkflowVersionListPath, params.WorkflowID.String())
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Get(),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Value(), nil
+}
+
+func (c *Client) WorkflowVersionRevert(ctx context.Context, params *WorkflowVersionRevertInput) (*Workflow, error) {
+	var resp ResponseProxy[Workflow]
+
+	path := fmt.Sprintf(WorkflowVersionRevertPath, params.WorkflowID.String(), params.Version)
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Post(),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
 }
 
 func detectContentType(data []byte) string {
