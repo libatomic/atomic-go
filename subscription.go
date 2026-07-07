@@ -42,6 +42,26 @@ const (
 )
 
 func (c *Client) SubscriptionGet(ctx context.Context, params *SubscriptionGetInput) (*Subscription, error) {
+	// The get-by-id endpoint is path-based. Other lookups — e.g. a user's
+	// subscription to a plan (user_id + plan_id) — resolve through the list
+	// endpoint, returning the first (most recent) match.
+	if params.SubscriptionID == nil {
+		limit := uint64(1)
+		subs, err := c.SubscriptionList(ctx, &SubscriptionListInput{
+			InstanceID: params.InstanceID,
+			UserID:     params.UserID,
+			PlanID:     params.PlanID,
+			Limit:      &limit,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if len(subs) == 0 {
+			return nil, fmt.Errorf("subscription not found")
+		}
+		return subs[0], nil
+	}
+
 	var resp ResponseProxy[Subscription]
 
 	path := fmt.Sprintf(SubscriptionGetPath, params.SubscriptionID.String())
