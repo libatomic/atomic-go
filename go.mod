@@ -1,11 +1,11 @@
-module github.com/libatomic/atomic-go
+module github.com/libatomic/atomic-go/v2
 
 go 1.25
 
 require (
 	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/google/go-querystring v1.1.0
-	github.com/libatomic/atomic v1.2.4
+	github.com/libatomic/atomic/v2 v2.0.1
 	golang.org/x/oauth2 v0.30.0
 )
 
@@ -47,6 +47,7 @@ require (
 	github.com/expr-lang/expr v1.17.6 // indirect
 	github.com/fanatic/instrumentedsql v0.0.0-20220630161905-0737c8d31b10 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
+	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/go-openapi/errors v0.20.0 // indirect
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
@@ -138,6 +139,7 @@ require (
 	golang.org/x/text v0.34.0 // indirect
 	golang.org/x/time v0.0.0-20220609170525-579cf78fd858 // indirect
 	gopkg.in/square/go-jose.v2 v2.6.0 // indirect
+	gopkg.in/yaml.v2 v2.4.0 // indirect
 	jaytaylor.com/html2text v0.0.0-20200412013138-3577fbdbcff7 // indirect
 )
 

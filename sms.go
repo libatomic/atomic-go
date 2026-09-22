@@ -20,7 +20,7 @@ package atomic
 import (
 	"context"
 
-	"github.com/libatomic/atomic/pkg/atomic"
+	"github.com/libatomic/atomic/v2/pkg/atomic"
 )
 
 const (
