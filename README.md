@@ -294,9 +294,15 @@ templates, err := client.TemplateList(ctx, &atomic.TemplateListInput{
 Manage user subscriptions and billing.
 
 ```go
-// Get a subscription
+// Get a subscription by id
 subscription, err := client.SubscriptionGet(ctx, &atomic.SubscriptionGetInput{
     SubscriptionID: atomic.String("subscription-id"),
+})
+
+// Get a user's subscription to a specific plan, if one exists
+subscription, err = client.SubscriptionGet(ctx, &atomic.SubscriptionGetInput{
+    UserID: atomic.String("user-id"),
+    PlanID: atomic.String("plan-id"),
 })
 
 // Create a subscription
