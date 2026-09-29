@@ -202,8 +202,8 @@ github.com/ledongthuc/pdf v0.0.0-20220302134840-0c2507a12d80/go.mod h1:imJHygn/1
 github.com/leodido/go-urn v1.2.0/go.mod h1:+8+nEpDfqqsY+g338gtMEUOtuK+4dEMhiQEgxpxOKII=
 github.com/lib/pq v1.10.9 h1:YXG7RB+JIjhP29X+OtkiDnYaXQwpS4JEWq7dtCCRUEw=
 github.com/lib/pq v1.10.9/go.mod h1:AlVN5x4E4T544tWzH6hKfbfQvm3HdbOxrmggDNAPY9o=
-github.com/libatomic/atomic/v2 v2.0.1 h1:1deikMSMGu3l5jjTUBTjuQCnRsalJ3SLDKhLVICKdhM=
-github.com/libatomic/atomic/v2 v2.0.1/go.mod h1:pLziF9Rhyfhx1S/yaellzLpJc2hV2aY0EVs5ioGCksQ=
+github.com/libatomic/atomic/v2 v2.1.0-rc.6 h1:KFr8ujzj2Zzx/1+V5b3q/rbEIM0sw3kbKpSkBgiMK0s=
+github.com/libatomic/atomic/v2 v2.1.0-rc.6/go.mod h1:pLziF9Rhyfhx1S/yaellzLpJc2hV2aY0EVs5ioGCksQ=
 github.com/libatomic/go-premailer v1.9.2-atomic h1:Li6/Z5LkPwdl6YOzKSLxq1a/757TTT2uPOYImq6aTZE=
 github.com/libatomic/go-premailer v1.9.2-atomic/go.mod h1:pGxZ3SG2JjkoWwM/CgswxvOPIE7feCjSNlfY/Hi/OTw=
 github.com/libatomic/squirrel v1.0.1 h1:9fM1FuZBBAzO1qrOO+89yjgUsrsnjQqqKvBvQHyiY98=
