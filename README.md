@@ -510,6 +510,40 @@ instances, err := client.InstanceList(ctx, &atomic.InstanceListInput{
 })
 ```
 
+#### Signing keys
+
+The instance's token and session keys, over the `instance:keys` scope
+(admin). Key material is never returned.
+
+```go
+// List the keys, current first (Kind narrows to "token" or "session")
+keys, err := client.InstanceKeyList(ctx, &atomic.InstanceKeyListInput{
+    InstanceID: instanceID,
+})
+
+// Rotate: a new current key; the old one verifies for the grace period
+key, err := client.InstanceKeyRotate(ctx, &atomic.InstanceKeyRotateInput{
+    InstanceID: instanceID,
+    Kind:       atomic.InstanceKeyKindToken,
+    Algorithm:  "ES256",
+    Grace:      90 * 24 * time.Hour, // 0 = 30 days, negative = retire now
+    Reason:     "RS256 retirement",
+})
+
+// Revert the last rotation: the replaced key signs again
+key, err = client.InstanceKeyRevert(ctx, &atomic.InstanceKeyRevertInput{
+    InstanceID: instanceID,
+    Kind:       atomic.InstanceKeyKindToken,
+    Grace:      7 * 24 * time.Hour,
+})
+
+// Retire a previous key now
+key, err = client.InstanceKeyRetire(ctx, &atomic.InstanceKeyRetireInput{
+    InstanceID: instanceID,
+    KeyID:      key.KeyID,
+})
+```
+
 ### Options
 
 Manage configuration options and settings.
