@@ -5,7 +5,7 @@ The official Atomic Go client library for interacting with the Atomic API.
 ## Installation
 
 ```bash
-go get github.com/libatomic/atomic-go
+go get github.com/libatomic/atomic-go/v2
 ```
 
 ## Quick Start
@@ -17,7 +17,7 @@ import (
     "context"
     "log"
     
-    "github.com/libatomic/atomic-go"
+    "github.com/libatomic/atomic-go/v2"
 )
 
 func main() {
@@ -294,9 +294,15 @@ templates, err := client.TemplateList(ctx, &atomic.TemplateListInput{
 Manage user subscriptions and billing.
 
 ```go
-// Get a subscription
+// Get a subscription by id
 subscription, err := client.SubscriptionGet(ctx, &atomic.SubscriptionGetInput{
     SubscriptionID: atomic.String("subscription-id"),
+})
+
+// Get a user's subscription to a specific plan, if one exists
+subscription, err = client.SubscriptionGet(ctx, &atomic.SubscriptionGetInput{
+    UserID: atomic.String("user-id"),
+    PlanID: atomic.String("plan-id"),
 })
 
 // Create a subscription
@@ -638,7 +644,7 @@ user, err := client.UserGet(ctx, &atomic.UserGetInput{
 
 The library depends on the following packages:
 
-- `github.com/libatomic/atomic` - Core Atomic types and models
+- `github.com/libatomic/atomic/v2` - Core Atomic types and models
 - `github.com/google/go-querystring` - Query string encoding
 - `golang.org/x/oauth2` - OAuth2 authentication
 - `github.com/go-ozzo/ozzo-validation/v4` - Input validation

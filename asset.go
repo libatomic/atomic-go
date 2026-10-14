@@ -27,24 +27,28 @@ import (
 	"net/textproto"
 	"strconv"
 
-	"github.com/libatomic/atomic/pkg/atomic"
+	"github.com/libatomic/atomic/v2/pkg/atomic"
 )
 
 type (
-	Asset            = atomic.Asset
-	AssetCreateInput = atomic.AssetCreateInput
-	AssetGetInput    = atomic.AssetGetInput
-	AssetUpdateInput = atomic.AssetUpdateInput
-	AssetDeleteInput = atomic.AssetDeleteInput
-	AssetListInput   = atomic.AssetListInput
+	Asset                    = atomic.Asset
+	AssetMultipartUpload     = atomic.AssetMultipartUpload
+	AssetMultipartPart       = atomic.AssetMultipartPart
+	AssetCreateInput         = atomic.AssetCreateInput
+	AssetGetInput            = atomic.AssetGetInput
+	AssetUpdateInput         = atomic.AssetUpdateInput
+	AssetDeleteInput         = atomic.AssetDeleteInput
+	AssetListInput           = atomic.AssetListInput
+	AssetCompleteUploadInput = atomic.AssetCompleteUploadInput
 )
 
 const (
-	AssetCreatePath = "/api/1.0.0/assets"
-	AssetGetPath    = "/api/1.0.0/assets/%s"
-	AssetUpdatePath = "/api/1.0.0/assets/%s"
-	AssetDeletePath = "/api/1.0.0/assets/%s"
-	AssetListPath   = "/api/1.0.0/assets"
+	AssetCreatePath         = "/api/1.0.0/assets"
+	AssetGetPath            = "/api/1.0.0/assets/%s"
+	AssetUpdatePath         = "/api/1.0.0/assets/%s"
+	AssetDeletePath         = "/api/1.0.0/assets/%s"
+	AssetListPath           = "/api/1.0.0/assets"
+	AssetCompleteUploadPath = "/api/1.0.0/assets/%s/upload-complete"
 )
 
 func (c *Client) AssetCreate(ctx context.Context, params *AssetCreateInput) (*Asset, error) {
@@ -156,4 +160,20 @@ func (c *Client) AssetList(ctx context.Context, params *AssetListInput) ([]*Asse
 	}
 
 	return resp.Value(), nil
+}
+
+// AssetCompleteUpload finishes an S3 multipart upload started by AssetCreate.
+func (c *Client) AssetCompleteUpload(ctx context.Context, params *AssetCompleteUploadInput) (*Asset, error) {
+	var resp ResponseProxy[Asset]
+
+	path := fmt.Sprintf(AssetCompleteUploadPath, params.AssetID.String())
+
+	if err := c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Post(),
+		&resp); err != nil {
+		return nil, err
+	}
+
+	return resp.Pointer(), nil
 }

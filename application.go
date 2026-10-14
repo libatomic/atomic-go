@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/libatomic/atomic/pkg/atomic"
+	"github.com/libatomic/atomic/v2/pkg/atomic"
 )
 
 type (
