@@ -44,7 +44,7 @@ const (
 func (c *Client) CustomRoleGet(ctx context.Context, params *CustomRoleGetInput) (*CustomRole, error) {
 	var resp ResponseProxy[CustomRole]
 
-	path := fmt.Sprintf(CustomRoleGetPath, params.RoleID.String())
+	path := fmt.Sprintf(CustomRoleGetPath, idString(params.RoleID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) CustomRoleCreate(ctx context.Context, params *CustomRoleCreateI
 func (c *Client) CustomRoleUpdate(ctx context.Context, params *CustomRoleUpdateInput) (*CustomRole, error) {
 	var resp ResponseProxy[CustomRole]
 
-	path := fmt.Sprintf(CustomRoleUpdatePath, params.RoleID.String())
+	path := fmt.Sprintf(CustomRoleUpdatePath, idString(params.RoleID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) CustomRoleUpdate(ctx context.Context, params *CustomRoleUpdateI
 }
 
 func (c *Client) CustomRoleDelete(ctx context.Context, params *CustomRoleDeleteInput) error {
-	path := fmt.Sprintf(CustomRoleDeletePath, params.RoleID.String())
+	path := fmt.Sprintf(CustomRoleDeletePath, idString(params.RoleID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

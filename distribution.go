@@ -44,7 +44,7 @@ const (
 func (c *Client) DistributionGet(ctx context.Context, params *DistributionGetInput) (*Distribution, error) {
 	var resp ResponseProxy[Distribution]
 
-	path := fmt.Sprintf(DistributionGetPath, params.DistributionID.String())
+	path := fmt.Sprintf(DistributionGetPath, idString(params.DistributionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) DistributionCreate(ctx context.Context, params *DistributionCre
 func (c *Client) DistributionUpdate(ctx context.Context, params *DistributionUpdateInput) (*Distribution, error) {
 	var resp ResponseProxy[Distribution]
 
-	path := fmt.Sprintf(DistributionUpdatePath, params.DistributionID.String())
+	path := fmt.Sprintf(DistributionUpdatePath, idString(params.DistributionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) DistributionUpdate(ctx context.Context, params *DistributionUpd
 }
 
 func (c *Client) DistributionDelete(ctx context.Context, params *DistributionDeleteInput) error {
-	path := fmt.Sprintf(DistributionDeletePath, params.DistributionID.String())
+	path := fmt.Sprintf(DistributionDeletePath, idString(params.DistributionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

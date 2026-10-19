@@ -64,7 +64,7 @@ func (c *Client) SubscriptionGet(ctx context.Context, params *SubscriptionGetInp
 
 	var resp ResponseProxy[Subscription]
 
-	path := fmt.Sprintf(SubscriptionGetPath, params.SubscriptionID.String())
+	path := fmt.Sprintf(SubscriptionGetPath, idString(params.SubscriptionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -105,7 +105,7 @@ func (c *Client) SubscriptionCreate(ctx context.Context, params *SubscriptionCre
 func (c *Client) SubscriptionUpdate(ctx context.Context, params *SubscriptionUpdateInput) (*Subscription, error) {
 	var resp ResponseProxy[Subscription]
 
-	path := fmt.Sprintf(SubscriptionUpdatePath, params.SubscriptionID.String())
+	path := fmt.Sprintf(SubscriptionUpdatePath, idString(params.SubscriptionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -118,7 +118,7 @@ func (c *Client) SubscriptionUpdate(ctx context.Context, params *SubscriptionUpd
 }
 
 func (c *Client) SubscriptionDelete(ctx context.Context, params *SubscriptionDeleteInput) error {
-	path := fmt.Sprintf(SubscriptionDeletePath, params.SubscriptionID.String())
+	path := fmt.Sprintf(SubscriptionDeletePath, idString(params.SubscriptionID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

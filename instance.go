@@ -61,7 +61,7 @@ func (c *Client) InstanceGet(ctx context.Context, params *InstanceGetInput) (*In
 		return nil, fmt.Errorf("instance_id is required")
 	}
 
-	path := fmt.Sprintf(InstanceGetPath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceGetPath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -89,7 +89,7 @@ func (c *Client) InstanceList(ctx context.Context, params *InstanceListInput) ([
 func (c *Client) InstanceUpdate(ctx context.Context, params *InstanceUpdateInput) (*Instance, error) {
 	var resp ResponseProxy[Instance]
 
-	path := fmt.Sprintf(InstanceUpdatePath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceUpdatePath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -102,7 +102,7 @@ func (c *Client) InstanceUpdate(ctx context.Context, params *InstanceUpdateInput
 }
 
 func (c *Client) InstanceDelete(ctx context.Context, params *InstanceDeleteInput) error {
-	path := fmt.Sprintf(InstanceDeletePath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceDeletePath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

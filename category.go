@@ -44,7 +44,7 @@ const (
 func (c *Client) CategoryGet(ctx context.Context, params *CategoryGetInput) (*Category, error) {
 	var resp ResponseProxy[Category]
 
-	path := fmt.Sprintf(CategoryGetPath, params.CategoryID.String())
+	path := fmt.Sprintf(CategoryGetPath, idString(params.CategoryID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) CategoryCreate(ctx context.Context, params *CategoryCreateInput
 func (c *Client) CategoryUpdate(ctx context.Context, params *CategoryUpdateInput) (*Category, error) {
 	var resp ResponseProxy[Category]
 
-	path := fmt.Sprintf(CategoryUpdatePath, params.CategoryID.String())
+	path := fmt.Sprintf(CategoryUpdatePath, idString(params.CategoryID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) CategoryUpdate(ctx context.Context, params *CategoryUpdateInput
 }
 
 func (c *Client) CategoryDelete(ctx context.Context, params *CategoryDeleteInput) error {
-	path := fmt.Sprintf(CategoryDeletePath, params.CategoryID.String())
+	path := fmt.Sprintf(CategoryDeletePath, idString(params.CategoryID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

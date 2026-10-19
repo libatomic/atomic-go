@@ -57,7 +57,7 @@ func (c *Client) ArticleCreate(ctx context.Context, params *ArticleCreateInput) 
 func (c *Client) ArticleGet(ctx context.Context, params *ArticleGetInput) (*Article, error) {
 	var resp ResponseProxy[Article]
 
-	path := fmt.Sprintf(ArticleGetPath, params.ArticleID.String())
+	path := fmt.Sprintf(ArticleGetPath, idString(params.ArticleID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) ArticleGet(ctx context.Context, params *ArticleGetInput) (*Arti
 func (c *Client) ArticleUpdate(ctx context.Context, params *ArticleUpdateInput) (*Article, error) {
 	var resp ResponseProxy[Article]
 
-	path := fmt.Sprintf(ArticleUpdatePath, params.ArticleID.String())
+	path := fmt.Sprintf(ArticleUpdatePath, idString(params.ArticleID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) ArticleUpdate(ctx context.Context, params *ArticleUpdateInput) 
 }
 
 func (c *Client) ArticleDelete(ctx context.Context, params *ArticleDeleteInput) error {
-	path := fmt.Sprintf(ArticleDeletePath, params.ArticleID.String())
+	path := fmt.Sprintf(ArticleDeletePath, idString(params.ArticleID))
 
 	return c.Backend.ExecContext(
 		ctx,

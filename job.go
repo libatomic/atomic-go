@@ -59,7 +59,7 @@ func (c *Client) JobCreate(ctx context.Context, params *JobCreateInput) (*Job, e
 func (c *Client) JobGet(ctx context.Context, params *JobGetInput) (*Job, error) {
 	var resp ResponseProxy[Job]
 
-	path := fmt.Sprintf(JobGetPath, params.JobID.String())
+	path := fmt.Sprintf(JobGetPath, idString(params.JobID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -74,7 +74,7 @@ func (c *Client) JobGet(ctx context.Context, params *JobGetInput) (*Job, error) 
 func (c *Client) JobUpdate(ctx context.Context, params *JobUpdateInput) (*Job, error) {
 	var resp ResponseProxy[Job]
 
-	path := fmt.Sprintf(JobUpdatePath, params.JobID.String())
+	path := fmt.Sprintf(JobUpdatePath, idString(params.JobID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -102,7 +102,7 @@ func (c *Client) JobList(ctx context.Context, params *JobListInput) ([]*Job, err
 func (c *Client) JobRestart(ctx context.Context, params *JobRestartInput) (*Job, error) {
 	var resp ResponseProxy[Job]
 
-	path := fmt.Sprintf(JobRestartPath, params.JobID.String())
+	path := fmt.Sprintf(JobRestartPath, idString(params.JobID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -117,7 +117,7 @@ func (c *Client) JobRestart(ctx context.Context, params *JobRestartInput) (*Job,
 func (c *Client) JobCancel(ctx context.Context, params *JobCancelInput) error {
 	var resp ResponseProxy[any]
 
-	path := fmt.Sprintf(JobCancelPath, params.JobID.String())
+	path := fmt.Sprintf(JobCancelPath, idString(params.JobID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

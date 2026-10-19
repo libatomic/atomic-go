@@ -47,7 +47,7 @@ const (
 func (c *Client) CreditGet(ctx context.Context, params *CreditGetInput) (*Credit, error) {
 	var resp ResponseProxy[Credit]
 
-	path := fmt.Sprintf(CreditGetPath, params.CreditID.String())
+	path := fmt.Sprintf(CreditGetPath, idString(params.CreditID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -62,7 +62,7 @@ func (c *Client) CreditGet(ctx context.Context, params *CreditGetInput) (*Credit
 func (c *Client) CreditUpdate(ctx context.Context, params *CreditUpdateInput) (*Credit, error) {
 	var resp ResponseProxy[Credit]
 
-	path := fmt.Sprintf(CreditUpdatePath, params.CreditID.String())
+	path := fmt.Sprintf(CreditUpdatePath, idString(params.CreditID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

@@ -62,7 +62,7 @@ func (c *Client) ApplicationCreate(ctx context.Context, params *ApplicationCreat
 func (c *Client) ApplicationGet(ctx context.Context, params *ApplicationGetInput) (*Application, error) {
 	var resp ResponseProxy[Application]
 
-	path := fmt.Sprintf(ApplicationGetPath, params.ApplicationID.String())
+	path := fmt.Sprintf(ApplicationGetPath, idString(params.ApplicationID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -77,7 +77,7 @@ func (c *Client) ApplicationGet(ctx context.Context, params *ApplicationGetInput
 func (c *Client) ApplicationUpdate(ctx context.Context, params *ApplicationUpdateInput) (*Application, error) {
 	var resp ResponseProxy[Application]
 
-	path := fmt.Sprintf(ApplicationUpdatePath, params.ApplicationID.String())
+	path := fmt.Sprintf(ApplicationUpdatePath, idString(params.ApplicationID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -90,7 +90,7 @@ func (c *Client) ApplicationUpdate(ctx context.Context, params *ApplicationUpdat
 }
 
 func (c *Client) ApplicationDelete(ctx context.Context, params *ApplicationDeleteInput) error {
-	path := fmt.Sprintf(ApplicationDeletePath, params.ApplicationID.String())
+	path := fmt.Sprintf(ApplicationDeletePath, idString(params.ApplicationID))
 
 	return c.Backend.ExecContext(
 		ctx,
