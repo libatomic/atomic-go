@@ -31,12 +31,12 @@ import (
 )
 
 type (
-	User            = atomic.User
-	UserGetInput    = atomic.UserGetInput
-	UserCreateInput = atomic.UserCreateInput
-	UserUpdateInput = atomic.UserUpdateInput
-	UserDeleteInput = atomic.UserDeleteInput
-	UserListInput   = atomic.UserListInput
+	User             = atomic.User
+	UserGetInput     = atomic.UserGetInput
+	UserCreateInput  = atomic.UserCreateInput
+	UserUpdateInput  = atomic.UserUpdateInput
+	UserDeleteInput  = atomic.UserDeleteInput
+	UserListInput    = atomic.UserListInput
 	UserImportInput  = atomic.UserImportInput
 	UserExportInput  = atomic.UserExportInput
 	UserExportSource = atomic.UserExportSource
@@ -80,14 +80,36 @@ func (c *Client) UserCreate(ctx context.Context, params *UserCreateInput) (*User
 	return resp.Pointer(), nil
 }
 
+// userUpdateWire is the on-the-wire shape of UserUpdateInput. The server
+// decodes `roles` as a plain array of role names (UserRoleUpdate.UnmarshalJSON
+// reads straight into Add), so the struct form the Go type marshals to,
+// {"add":[...],"overwrite":false}, is rejected as a bad request even when
+// no roles were given. The outer Roles field shadows the embedded one.
+type userUpdateWire struct {
+	*UserUpdateInput
+	Roles []string `json:"roles,omitempty"`
+}
+
 func (c *Client) UserUpdate(ctx context.Context, params *UserUpdateInput) (*User, error) {
 	var resp ResponseProxy[User]
+
+	if params == nil {
+		return nil, errors.New("user update: params are required")
+	}
+	if len(params.Roles.Remove) > 0 {
+		return nil, errors.New("user update: the API does not support roles.remove; send the full role list in roles.add")
+	}
+
+	wire := &userUpdateWire{UserUpdateInput: params}
+	for _, r := range params.Roles.Add {
+		wire.Roles = append(wire.Roles, string(r))
+	}
 
 	path := fmt.Sprintf(UserUpdatePath, idString(params.UserID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Put(),
+		NewRequest(ctx, path, wire).Put(),
 		&resp); err != nil {
 		return nil, err
 	}
