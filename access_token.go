@@ -21,6 +21,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/libatomic/atomic/v2/pkg/atomic"
 )
@@ -39,6 +40,7 @@ const (
 	AccessTokenGetPath    = "/api/1.0.0/tokens/%s"
 	AccessTokenUpdatePath = "/api/1.0.0/tokens/%s"
 	AccessTokenRevokePath = "/api/1.0.0/tokens/%s"
+	UserTokenRevokePath   = "/api/1.0.0/users/%s/tokens/%s"
 	AccessTokenDeletePath = "/api/1.0.0/tokens/%s"
 )
 
@@ -54,14 +56,41 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *AccessTokenCreat
 		return nil, errors.New("user_id or application_id is required")
 	}
 
+	// Token creation is a POST; servers before PSPT-780 only registered GET
+	// for the user route, so retry once on 405 for those.
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Get(),
+		NewRequest(ctx, path, params).Post(),
 		&resp); err != nil {
+		var apiErr Error
+		if errors.As(err, &apiErr) && strings.HasPrefix(apiErr.Status, "405") {
+			if err := c.Backend.ExecContext(
+				ctx,
+				NewRequest(ctx, path, params).Get(),
+				&resp); err != nil {
+				return nil, err
+			}
+			return resp.Pointer(), nil
+		}
 		return nil, err
 	}
 
 	return resp.Pointer(), nil
+}
+
+// UserTokenRevoke revokes one of a user's own tokens via the member route,
+// which only needs member:write (used by `atomic-cli logout`).
+func (c *Client) UserTokenRevoke(ctx context.Context, params *AccessTokenRevokeInput) error {
+	if params.UserID == nil {
+		return errors.New("user_id is required")
+	}
+	path := fmt.Sprintf(UserTokenRevokePath, idString(params.UserID), idString(params.AccessTokenID))
+
+	return c.Backend.ExecContext(
+		ctx,
+		NewRequest(ctx, path, params).Delete(),
+		nil,
+	)
 }
 
 func (c *Client) AccessTokenGet(ctx context.Context, params *AccessTokenGetInput) (*AccessToken, error) {
