@@ -113,6 +113,10 @@ func (c *Client) PlanList(ctx context.Context, params *PlanListInput) ([]*Plan, 
 	return resp.Value(), nil
 }
 
+// PlanSubscribe subscribes a user to a plan. The server exposes this route
+// as GET /plans/{plan_id}/subscribe with the input on the query string (it
+// doubles as a one-click link), so the params are sent as json-named query
+// parameters rather than a POST body.
 func (c *Client) PlanSubscribe(ctx context.Context, params *PlanSubscribeInput) (*Subscription, error) {
 	var resp ResponseProxy[Subscription]
 
@@ -120,7 +124,7 @@ func (c *Client) PlanSubscribe(ctx context.Context, params *PlanSubscribeInput) 
 
 	if err := c.Backend.ExecContext(
 		ctx,
-		NewRequest(ctx, path, params).Post(),
+		NewRequest(ctx, path, params).Get().WithEncoding(ParamsEncodingJSONQuery),
 		&resp); err != nil {
 		return nil, err
 	}

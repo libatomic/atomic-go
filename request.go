@@ -86,6 +86,10 @@ const (
 	ParamsEncodingJSON      ParamsEncoding = "json"
 	ParamsEncodingMultipart ParamsEncoding = "multipart"
 	ParamsEncodingQuery     ParamsEncoding = "query"
+	// ParamsEncodingJSONQuery puts the params on the query string using their
+	// json field names (the server decodes query params with the json alias),
+	// for GET routes whose input types carry json tags but no url tags.
+	ParamsEncodingJSONQuery ParamsEncoding = "json-query"
 )
 
 func ContextWithParams(ctx context.Context, params Params) context.Context {
@@ -189,7 +193,8 @@ func (p *RequestProxy[T]) Method() string {
 }
 
 func (p *RequestProxy[T]) Path() string {
-	if p.encoding == ParamsEncodingQuery {
+	switch p.encoding {
+	case ParamsEncodingQuery:
 		values, err := query.Values(p.methodParams)
 		if err != nil {
 			return p.path
@@ -197,6 +202,10 @@ func (p *RequestProxy[T]) Path() string {
 
 		if len(values) > 0 {
 			return p.path + "?" + values.Encode()
+		}
+	case ParamsEncodingJSONQuery:
+		if q := jsonToQuery(p.methodParams); q != "" {
+			return p.path + "?" + q
 		}
 	}
 

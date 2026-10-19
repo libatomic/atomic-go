@@ -1,6 +1,7 @@
 package atomic
 
 import (
+	"context"
 	"encoding/json"
 	"strings"
 	"testing"
@@ -60,4 +61,21 @@ func atomicID(t *testing.T, s string) atomic.ID {
 		t.Fatal(err)
 	}
 	return id
+}
+
+func TestPlanSubscribeUsesGetWithJSONQuery(t *testing.T) {
+	plan := atomicID(t, "THzAqaUccTaVUzm9Ckeig3")
+	user := atomicID(t, "CgCCiHRHZYrsZfc2rZaAi")
+	in := &PlanSubscribeInput{PlanID: &plan, UserID: &user}
+	req := NewRequest(context.Background(), "/api/1.0.0/plans/x/subscribe", in).Get().WithEncoding(ParamsEncodingJSONQuery)
+	if req.Method() != "GET" {
+		t.Fatalf("method = %s", req.Method())
+	}
+	p := req.Path()
+	if !strings.Contains(p, "user_id=CgCCiHRHZYrsZfc2rZaAi") || !strings.Contains(p, "plan_id=THzAqaUccTaVUzm9Ckeig3") {
+		t.Fatalf("query not json-named: %s", p)
+	}
+	if req.Body() != nil {
+		t.Fatal("GET must not carry a body")
+	}
 }
