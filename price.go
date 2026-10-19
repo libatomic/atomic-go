@@ -44,7 +44,7 @@ const (
 func (c *Client) PriceGet(ctx context.Context, params *PriceGetInput) (*Price, error) {
 	var resp ResponseProxy[Price]
 
-	path := fmt.Sprintf(PriceGetPath, params.PriceID.String())
+	path := fmt.Sprintf(PriceGetPath, idString(params.PriceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) PriceCreate(ctx context.Context, params *PriceCreateInput) (*Pr
 func (c *Client) PriceUpdate(ctx context.Context, params *PriceUpdateInput) (*Price, error) {
 	var resp ResponseProxy[Price]
 
-	path := fmt.Sprintf(PriceUpdatePath, params.PriceID.String())
+	path := fmt.Sprintf(PriceUpdatePath, idString(params.PriceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) PriceUpdate(ctx context.Context, params *PriceUpdateInput) (*Pr
 }
 
 func (c *Client) PriceDelete(ctx context.Context, params *PriceDeleteInput) error {
-	path := fmt.Sprintf(PriceDeletePath, params.PriceID.String())
+	path := fmt.Sprintf(PriceDeletePath, idString(params.PriceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

@@ -92,7 +92,7 @@ func (c *Client) WorkflowGet(ctx context.Context, params *WorkflowGetInput) (*Wo
 
 	var pathID string
 	if params.WorkflowID != nil {
-		pathID = params.WorkflowID.String()
+		pathID = idString(params.WorkflowID)
 	} else if params.Slug != nil {
 		pathID = *params.Slug
 	}
@@ -112,7 +112,7 @@ func (c *Client) WorkflowGet(ctx context.Context, params *WorkflowGetInput) (*Wo
 func (c *Client) WorkflowUpdate(ctx context.Context, params *WorkflowUpdateInput, body io.Reader, contentType string) (*Workflow, error) {
 	var resp ResponseProxy[Workflow]
 
-	path := fmt.Sprintf(WorkflowUpdatePath, params.WorkflowID.String())
+	path := fmt.Sprintf(WorkflowUpdatePath, idString(params.WorkflowID))
 
 	req := NewRequest(ctx, path, params).
 		Put().
@@ -130,7 +130,7 @@ func (c *Client) WorkflowUpdate(ctx context.Context, params *WorkflowUpdateInput
 }
 
 func (c *Client) WorkflowDelete(ctx context.Context, params *WorkflowDeleteInput) error {
-	path := fmt.Sprintf(WorkflowDeletePath, params.WorkflowID.String())
+	path := fmt.Sprintf(WorkflowDeletePath, idString(params.WorkflowID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -146,7 +146,7 @@ func (c *Client) WorkflowDelete(ctx context.Context, params *WorkflowDeleteInput
 func (c *Client) WorkflowRun(ctx context.Context, params *WorkflowRunInput) (*WorkflowRun, error) {
 	var resp ResponseProxy[WorkflowRun]
 
-	path := fmt.Sprintf(WorkflowRunPath, params.WorkflowID.String())
+	path := fmt.Sprintf(WorkflowRunPath, idString(params.WorkflowID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -161,7 +161,7 @@ func (c *Client) WorkflowRun(ctx context.Context, params *WorkflowRunInput) (*Wo
 func (c *Client) WorkflowRunList(ctx context.Context, params *WorkflowRunListInput) ([]*WorkflowRun, error) {
 	var resp ResponseProxy[[]*WorkflowRun]
 
-	path := fmt.Sprintf(WorkflowRunListPath, params.WorkflowID.String())
+	path := fmt.Sprintf(WorkflowRunListPath, idString(params.WorkflowID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -178,10 +178,10 @@ func (c *Client) WorkflowRunGet(ctx context.Context, params *WorkflowRunGetInput
 
 	wfID := ""
 	if params.WorkflowID != nil {
-		wfID = params.WorkflowID.String()
+		wfID = idString(params.WorkflowID)
 	}
 
-	path := fmt.Sprintf(WorkflowRunGetPath, wfID, params.RunID.String())
+	path := fmt.Sprintf(WorkflowRunGetPath, wfID, idString(params.RunID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -210,7 +210,7 @@ func (c *Client) WorkflowUpdateFromBytes(ctx context.Context, params *WorkflowUp
 func (c *Client) WorkflowVersionList(ctx context.Context, params *WorkflowVersionListInput) ([]*WorkflowVersion, error) {
 	var resp ResponseProxy[[]*WorkflowVersion]
 
-	path := fmt.Sprintf(WorkflowVersionListPath, params.WorkflowID.String())
+	path := fmt.Sprintf(WorkflowVersionListPath, idString(params.WorkflowID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -225,7 +225,7 @@ func (c *Client) WorkflowVersionList(ctx context.Context, params *WorkflowVersio
 func (c *Client) WorkflowVersionRevert(ctx context.Context, params *WorkflowVersionRevertInput) (*Workflow, error) {
 	var resp ResponseProxy[Workflow]
 
-	path := fmt.Sprintf(WorkflowVersionRevertPath, params.WorkflowID.String(), params.Version)
+	path := fmt.Sprintf(WorkflowVersionRevertPath, idString(params.WorkflowID), params.Version)
 
 	if err := c.Backend.ExecContext(
 		ctx,

@@ -55,7 +55,7 @@ const (
 func (c *Client) UserGet(ctx context.Context, params *UserGetInput) (*User, error) {
 	var resp ResponseProxy[User]
 
-	path := fmt.Sprintf(UserGetPath, params.UserID.String())
+	path := fmt.Sprintf(UserGetPath, idString(params.UserID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -83,7 +83,7 @@ func (c *Client) UserCreate(ctx context.Context, params *UserCreateInput) (*User
 func (c *Client) UserUpdate(ctx context.Context, params *UserUpdateInput) (*User, error) {
 	var resp ResponseProxy[User]
 
-	path := fmt.Sprintf(UserUpdatePath, params.UserID.String())
+	path := fmt.Sprintf(UserUpdatePath, idString(params.UserID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -96,7 +96,7 @@ func (c *Client) UserUpdate(ctx context.Context, params *UserUpdateInput) (*User
 }
 
 func (c *Client) UserDelete(ctx context.Context, params *UserDeleteInput) error {
-	path := fmt.Sprintf(UserDeletePath, params.UserID.String())
+	path := fmt.Sprintf(UserDeletePath, idString(params.UserID))
 
 	return c.Backend.ExecContext(
 		ctx,

@@ -44,7 +44,7 @@ const (
 func (c *Client) AudienceGet(ctx context.Context, params *AudienceGetInput) (*Audience, error) {
 	var resp ResponseProxy[Audience]
 
-	path := fmt.Sprintf(AudienceGetPath, params.AudienceID.String())
+	path := fmt.Sprintf(AudienceGetPath, idString(params.AudienceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -72,7 +72,7 @@ func (c *Client) AudienceCreate(ctx context.Context, params *AudienceCreateInput
 func (c *Client) AudienceUpdate(ctx context.Context, params *AudienceUpdateInput) (*Audience, error) {
 	var resp ResponseProxy[Audience]
 
-	path := fmt.Sprintf(AudienceUpdatePath, params.AudienceID.String())
+	path := fmt.Sprintf(AudienceUpdatePath, idString(params.AudienceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) AudienceUpdate(ctx context.Context, params *AudienceUpdateInput
 }
 
 func (c *Client) AudienceDelete(ctx context.Context, params *AudienceDeleteInput) error {
-	path := fmt.Sprintf(AudienceDeletePath, params.AudienceID.String())
+	path := fmt.Sprintf(AudienceDeletePath, idString(params.AudienceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

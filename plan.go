@@ -46,7 +46,7 @@ const (
 func (c *Client) PlanGet(ctx context.Context, params *PlanGetInput) (*Plan, error) {
 	var resp ResponseProxy[Plan]
 
-	path := fmt.Sprintf(PlanGetPath, params.PlanID.String())
+	path := fmt.Sprintf(PlanGetPath, idString(params.PlanID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -74,7 +74,7 @@ func (c *Client) PlanCreate(ctx context.Context, params *PlanCreateInput) (*Plan
 func (c *Client) PlanUpdate(ctx context.Context, params *PlanUpdateInput) (*Plan, error) {
 	var resp ResponseProxy[Plan]
 
-	path := fmt.Sprintf(PlanUpdatePath, params.PlanID.String())
+	path := fmt.Sprintf(PlanUpdatePath, idString(params.PlanID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -87,7 +87,7 @@ func (c *Client) PlanUpdate(ctx context.Context, params *PlanUpdateInput) (*Plan
 }
 
 func (c *Client) PlanDelete(ctx context.Context, params *PlanDeleteInput) error {
-	path := fmt.Sprintf(PlanDeletePath, params.PlanID.String())
+	path := fmt.Sprintf(PlanDeletePath, idString(params.PlanID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -116,7 +116,7 @@ func (c *Client) PlanList(ctx context.Context, params *PlanListInput) ([]*Plan, 
 func (c *Client) PlanSubscribe(ctx context.Context, params *PlanSubscribeInput) (*Subscription, error) {
 	var resp ResponseProxy[Subscription]
 
-	path := fmt.Sprintf(PlanSubscribePath, params.PlanID.String())
+	path := fmt.Sprintf(PlanSubscribePath, idString(params.PlanID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

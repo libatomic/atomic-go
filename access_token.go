@@ -47,9 +47,9 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *AccessTokenCreat
 	var path string
 
 	if params.UserID != nil {
-		path = fmt.Sprintf(UserTokenCreatePath, params.UserID.String())
+		path = fmt.Sprintf(UserTokenCreatePath, idString(params.UserID))
 	} else if params.ApplicationID != nil {
-		path = fmt.Sprintf(AppTokenCreatePath, params.ApplicationID.String())
+		path = fmt.Sprintf(AppTokenCreatePath, idString(params.ApplicationID))
 	} else {
 		return nil, errors.New("user_id or application_id is required")
 	}
@@ -67,7 +67,7 @@ func (c *Client) AccessTokenCreate(ctx context.Context, params *AccessTokenCreat
 func (c *Client) AccessTokenGet(ctx context.Context, params *AccessTokenGetInput) (*AccessToken, error) {
 	var resp ResponseProxy[AccessToken]
 
-	path := fmt.Sprintf(AccessTokenGetPath, params.AccessTokenID.String())
+	path := fmt.Sprintf(AccessTokenGetPath, idString(params.AccessTokenID))
 
 	if params.AccessTokenID == nil {
 		return nil, errors.New("token_id is required")
@@ -86,7 +86,7 @@ func (c *Client) AccessTokenGet(ctx context.Context, params *AccessTokenGetInput
 func (c *Client) AccessTokenUpdate(ctx context.Context, params *AccessTokenUpdateInput) (*AccessToken, error) {
 	var resp ResponseProxy[AccessToken]
 
-	path := fmt.Sprintf(AccessTokenUpdatePath, params.AccessTokenID.String())
+	path := fmt.Sprintf(AccessTokenUpdatePath, idString(params.AccessTokenID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -99,7 +99,7 @@ func (c *Client) AccessTokenUpdate(ctx context.Context, params *AccessTokenUpdat
 }
 
 func (c *Client) AccessTokenRevoke(ctx context.Context, params *AccessTokenRevokeInput) error {
-	path := fmt.Sprintf(AccessTokenRevokePath, params.AccessTokenID.String())
+	path := fmt.Sprintf(AccessTokenRevokePath, idString(params.AccessTokenID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

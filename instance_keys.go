@@ -45,7 +45,7 @@ const (
 func (c *Client) InstanceKeyList(ctx context.Context, params *InstanceKeyListInput) ([]*InstanceKey, error) {
 	var resp ResponseProxy[[]*InstanceKey]
 
-	path := fmt.Sprintf(InstanceKeyListPath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceKeyListPath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -62,7 +62,7 @@ func (c *Client) InstanceKeyList(ctx context.Context, params *InstanceKeyListInp
 func (c *Client) InstanceKeyRotate(ctx context.Context, params *InstanceKeyRotateInput) (*InstanceKey, error) {
 	var resp ResponseProxy[InstanceKey]
 
-	path := fmt.Sprintf(InstanceKeyRotatePath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceKeyRotatePath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -78,7 +78,7 @@ func (c *Client) InstanceKeyRotate(ctx context.Context, params *InstanceKeyRotat
 func (c *Client) InstanceKeyRevert(ctx context.Context, params *InstanceKeyRevertInput) (*InstanceKey, error) {
 	var resp ResponseProxy[InstanceKey]
 
-	path := fmt.Sprintf(InstanceKeyRevertPath, params.InstanceID.String())
+	path := fmt.Sprintf(InstanceKeyRevertPath, idString(params.InstanceID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -94,7 +94,7 @@ func (c *Client) InstanceKeyRevert(ctx context.Context, params *InstanceKeyRever
 func (c *Client) InstanceKeyRetire(ctx context.Context, params *InstanceKeyRetireInput) (*InstanceKey, error) {
 	var resp ResponseProxy[InstanceKey]
 
-	path := fmt.Sprintf(InstanceKeyRetirePath, params.InstanceID.String(), params.KeyID)
+	path := fmt.Sprintf(InstanceKeyRetirePath, idString(params.InstanceID), params.KeyID)
 
 	if err := c.Backend.ExecContext(
 		ctx,

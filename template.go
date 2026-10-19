@@ -44,7 +44,7 @@ const (
 func (c *Client) TemplateGet(ctx context.Context, params *TemplateGetInput) (*Template, error) {
 	var resp ResponseProxy[Template]
 
-	path := fmt.Sprintf(TemplateGetPath, params.TemplateID.String())
+	path := fmt.Sprintf(TemplateGetPath, idString(params.TemplateID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -85,7 +85,7 @@ func (c *Client) TemplateCreate(ctx context.Context, params *TemplateCreateInput
 func (c *Client) TemplateUpdate(ctx context.Context, params *TemplateUpdateInput) (*Template, error) {
 	var resp ResponseProxy[Template]
 
-	path := fmt.Sprintf(TemplateUpdatePath, params.TemplateID.String())
+	path := fmt.Sprintf(TemplateUpdatePath, idString(params.TemplateID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -98,7 +98,7 @@ func (c *Client) TemplateUpdate(ctx context.Context, params *TemplateUpdateInput
 }
 
 func (c *Client) TemplateDelete(ctx context.Context, params *TemplateDeleteInput) error {
-	path := fmt.Sprintf(TemplateDeletePath, params.TemplateID.String())
+	path := fmt.Sprintf(TemplateDeletePath, idString(params.TemplateID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

@@ -112,7 +112,7 @@ func (c *Client) AssetCreate(ctx context.Context, params *AssetCreateInput) (*As
 func (c *Client) AssetGet(ctx context.Context, params *AssetGetInput) (*Asset, error) {
 	var resp ResponseProxy[Asset]
 
-	path := fmt.Sprintf(AssetGetPath, params.AssetID.String())
+	path := fmt.Sprintf(AssetGetPath, idString(params.AssetID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -127,7 +127,7 @@ func (c *Client) AssetGet(ctx context.Context, params *AssetGetInput) (*Asset, e
 func (c *Client) AssetUpdate(ctx context.Context, params *AssetUpdateInput) (*Asset, error) {
 	var resp ResponseProxy[Asset]
 
-	path := fmt.Sprintf(AssetUpdatePath, params.AssetID.String())
+	path := fmt.Sprintf(AssetUpdatePath, idString(params.AssetID))
 
 	if err := c.Backend.ExecContext(
 		ctx,
@@ -140,7 +140,7 @@ func (c *Client) AssetUpdate(ctx context.Context, params *AssetUpdateInput) (*As
 }
 
 func (c *Client) AssetDelete(ctx context.Context, params *AssetDeleteInput) error {
-	path := fmt.Sprintf(AssetDeletePath, params.AssetID.String())
+	path := fmt.Sprintf(AssetDeletePath, idString(params.AssetID))
 
 	return c.Backend.ExecContext(
 		ctx,
@@ -166,7 +166,7 @@ func (c *Client) AssetList(ctx context.Context, params *AssetListInput) ([]*Asse
 func (c *Client) AssetCompleteUpload(ctx context.Context, params *AssetCompleteUploadInput) (*Asset, error) {
 	var resp ResponseProxy[Asset]
 
-	path := fmt.Sprintf(AssetCompleteUploadPath, params.AssetID.String())
+	path := fmt.Sprintf(AssetCompleteUploadPath, idString(params.AssetID))
 
 	if err := c.Backend.ExecContext(
 		ctx,

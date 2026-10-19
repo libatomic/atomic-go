@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"strings"
 
+	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -34,6 +35,12 @@ type (
 		AccessToken string
 		Host        string
 		http        *http.Client
+		// transport, when set, is the base RoundTripper for the direct client
+		// and for the client-credentials token exchange.
+		transport http.RoundTripper
+		// creds, when set, is applied after all options so WithTransport and
+		// WithClientCredentials compose regardless of order.
+		creds *clientcredentials.Config
 	}
 
 	ApiBackend struct {
@@ -59,6 +66,19 @@ func New(opts ...ApiOption) *Client {
 		opt(&b.c)
 	}
 
+	if b.c.transport != nil && b.c.http == http.DefaultClient {
+		b.c.http = &http.Client{Transport: b.c.transport}
+	}
+
+	if b.c.creds != nil {
+		b.c.creds.TokenURL = "https://" + b.c.Host + "/oauth/token"
+		ctx := context.Background()
+		if b.c.transport != nil {
+			ctx = context.WithValue(ctx, oauth2.HTTPClient, &http.Client{Transport: b.c.transport})
+		}
+		b.c.http = b.c.creds.Client(ctx)
+	}
+
 	return NewClient(b)
 }
 
@@ -80,16 +100,21 @@ func WithHTTPClient(http *http.Client) ApiOption {
 	}
 }
 
+// WithTransport sets the base RoundTripper used for API calls and for the
+// client-credentials token exchange. Useful for logging or tracing.
+func WithTransport(rt http.RoundTripper) ApiOption {
+	return func(c *ApiConfig) {
+		c.transport = rt
+	}
+}
+
 func WithClientCredentials(clientID, clientSecret string, scopes ...string) ApiOption {
 	return func(c *ApiConfig) {
-		cc := clientcredentials.Config{
+		c.creds = &clientcredentials.Config{
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			Scopes:       scopes,
-			TokenURL:     "https://" + c.Host + "/oauth/token",
 		}
-
-		c.http = cc.Client(context.Background())
 	}
 }
 
